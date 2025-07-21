@@ -1,17 +1,39 @@
-- Sunday 2025-07-20. to day might be holiday. 
-but the reason that I'm here is.
-1. Last night. I can't sleep because the weather, and my though.
-    I'm sober thier but I have one though that I test deviver Koryen v0.001(build using vibe method with copilot stack JavaScript HTML CSS just for POC. ) to test to Koryen. I was see re action after they know maybe thier problem will gone, they not even intest. So, The Youtube send something to me and I accept it.
-    And then I pick advise 1st clone project. I apply insteat, I use Gemini Deep Research 
-    Project change but Time not. So, Why I'm here to tranfer boilerplate and progress from KoryenAlbCraft to Project n8n.
-2. I love to. Don't believe?
-    Ok, I admit I'm high but I love "Programming" "Money Freedom" "Time Place Freedom"
-    I wantttttt to programming or just type something coz I'm a BAD ASS when I'm with computer and internet.
-    ""This is my place""
-    So, That Why I'm here.
+# Sunday, 2025-07-20. : Today might be a holiday, but the reason I'm here is
 
-This is my first time that I wrote why I change Project after commit "helo, world" = break promise.
-But acctually I don't thinl that. Coz I already deliver even just v0.001 but can see that's not really problem.
-They "Want to create with thier own" create it's not really problem.
-But I solve the problem with change as fast as I can. move to Project that have more opportunity.
-In the opasit side this work for find reaction to test that is real problem, or they not.
+    1.  Last night, I couldn't sleep because of the weather and my thoughts. I was sober, but I had an idea to deliver a proof-of-concept, Koryen v0.001 (built with a stack of JavaScript, HTML, and CSS), to test with Koryen. I saw their reaction after they realized their problem could be solved: they weren't even interested. Then, YouTube suggested something, and I accepted it. I took the advice to start with a clone project. Instead, I used Gemini for deep research. The project has changed, but the timeline has not. So, that's why I'm here—to transfer the boilerplate and progress from KoryenAlbCraft to a new project.
+
+    2.  I love doing this. Don't believe me? Okay, I admit I'm feeling high on the idea, but I love programming, financial freedom, and the freedom of time and place. I really want to program because I'm a badass when I'm with a computer and the internet. This is my place. So, that's why I'm here.
+
+---
+
+This is the first time I've written about why I changed projects after the initial "hello, world" commit, which feels like breaking a promise. But actually, I don't think it is. Because I already delivered v0.001, I could see that the user's real problem wasn't what I had solved. The issue is that they "want to create it on their own."
+
+So, I'm solving the problem by changing course as quickly as possible and moving to a project with more opportunity. On the other hand, this experiment successfully got a reaction and validated whether the perceived problem was real.
+
+# Friday, July 19, 2025: The Long, Long Night.
+
+Genesis prompt:
+
+---
+
+### My First(Real) Project: Goals and Context
+
+I want to complete my first programming project to escape 'tutorial hell' and build something real.
+
+**The Project's Goals:**
+
+-   Learn by building, focusing on practical skills like problem-solving, software architecture, system design, API management, and documentation.
+-   Ship a Minimum Viable Product (MVP) that is strong enough to serve as a portfolio piece.
+-   Prepare for the next phase: solving real-world problems for clients, such as freelancing for SMEs on platforms like Fastwork.
+
+**My Background & Interests:**
+Many people advise cloning popular apps, but my experience is more specific.
+
+-   **Automation & APIs:** I'm an advanced Notion user who has built complex templates with relational databases and automations. I enjoy using tools like Make.com and have created AI chatbot flows and automations using APIs for Notion, Google Sheets, Drive, and Calendar.
+-   **Open Source & Efficiency:** I plan to explore n8n because I'm passionate about open-source, the concept of "working lazy" (achieving better results with less effort through automation/AI), and the ability to own my workflows as code.
+-   **Knowledge Base:** My passions include thinking, learning, games, philosophy, and now, programming. I also have knowledge in personal finance, investing, Bitcoin (economics, technology concept), and digital marketing.
+
+**The Strategic Goal:**
+I am a generalist aiming to become a specialist. My goal is to specialize in programming by integrating it with my existing knowledge, focusing on **APIs, AI agents, and automation** to solve productivity problems.
+
+#### --- July 20, 3:51PM ---

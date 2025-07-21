@@ -47,10 +47,10 @@ yarn-error.log*
 next-env.d.ts
 
 
-##- IDE files
-# .vscode/
-# .idea/
-#*.swp
+#- IDE files
+.vscode/
+.idea/
+*.swp
 
 ##- Build output
 dist/
