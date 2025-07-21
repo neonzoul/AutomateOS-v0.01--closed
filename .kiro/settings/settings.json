@@ -1,7 +1,6 @@
 {
     "workbench.editor.empty.hint": "hidden",
-    "workbench.secondarySideBar.showLabels": false,
-
+    
     // ---- theme color ---- //
     "workbench.colorCustomizations": {
         // code background
@@ -52,45 +51,21 @@
                     "foreground": "#f1e7e7"
                 }
             },
-              // python multi comment color (in Kira IDE)
+            // python multi comment color (in Kira IDE)
             {
-                "scope": ["punctuation.definition.string.begin.python", "string.quoted.docstring.multi.python", "punctuation.definition.string.end.python"],
+                "scope": "string.quoted.docstring.multi.python",
                 "settings": {
-                    "foreground": "#a3a1aac9"
+                    "foreground": "#f1e7e7"
                 }
 
             }
         ]
     },
 
-    //////////////////////////////////////
-    //////////////////////////////////////
-    //////////////////////////////////////
-    // Auto Formatter//
-    //////////////////////////////////////
-    //////////////////////////////////////
-    //////////////////////////////////////
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    // Auto Formatter
     "editor.formatOnSave": true,
-    "prettier.semi": true,
-    "prettier.tabWidth": 4,
-    "prettier.singleQuote": true,
-    "prettier.trailingComma": "es5",
-    "prettier.bracketSameLine": true,
-    "eslint.format.enable": true,
-    "git.autofetch": true,
-    "github.copilot.enable": {
-        "*": false,
-        "plaintext": false,
-        "markdown": false,
-        "scminput": false
-    },
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
-    "codeium.enableConfig": {
-        "*": false
-    },
-    "codeium.enableCodeLens": "hide_x",
-    "workbench.colorTheme": "Kiro Dark",
     "workbench.iconTheme": "material-icon-theme",
-    "git.openRepositoryInParentFolders": "never"
+    "git.autofetch": true,
+    "git.openRepositoryInParentFolders": "never",
+    "terminal.integrated.defaultProfile.windows": "Git Bash"
 }
