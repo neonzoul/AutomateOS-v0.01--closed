@@ -3,7 +3,8 @@
 ### Title :
 
 ### Log :
-[✔️] edit package. Json
+[✔️] Boilerplat (previous project) import and edited.
+-    edit package. Json
     - Kira - re check and clearn project after import Biolerplate from last project.
         - Updated package.json with correct dependencies and scripts
         - Fixed tsconfig.json for Vite instead of Next.js
@@ -12,9 +13,46 @@
         - TypeScript: Configured for modern React development with proper paths
         - Set up Chakra UI integration
         - Maintained existing folder structure in src/ for components, contexts, hooks, services
-[] commit hello world
-[] Boilerplat (previous project) implement.
-[] task 1,2.....
+[✔️] commit hello world
+[✔️] Set Up AI Assistant (NotbookLM , Gemini2,5pro).
+- Start Task1
+- Gemini summay Todo.  The goal is to establish a solid foundation for the backend.
+### **Day 1 Todo: Backend Project Foundation**.
+**Checklist for Today:**
+  * **[ ] 1. Create Project Directory:**
+      * Create a single root folder for your project, for example: `AutomateOS`.
+  * **[ ] 2. Set Up Virtual Environment:**
+      * Inside the `AutomateOS` directory, create and activate a Python virtual environment. This isolates your project's dependencies.
+  * **[ ] 3. Install Core Dependencies:**
+      * With your virtual environment active, use `pip` to install the essential packages for the backend:
+        ```bash
+        pip install fastapi "uvicorn[standard]" sqlmodel
+        ```
+      * [cite\_start]This covers the web framework, server, and the library for data modeling.
+  * **[ ] 4. Create Initial Project Structure:**
+      * [cite\_start]Set up a proper directory organization within your project folder. A good starting point is:
+        ```
+        AutomateOS/
+        ├── app/
+        │   ├── __init__.py
+        │   └── main.py
+        └── requirements.txt 
+        ```
+
+  * **[ ] 5. Implement Basic Health Check Endpoint:**
+
+      * [cite\_start]In the `app/main.py` file, write the code for a basic FastAPI application.
+      * Include a simple "health check" endpoint that returns a JSON message (e.g., `{"message": "Hello, Automation World!"}`).
+
+  * **[ ] 6. Run the Development Server:**
+
+      * From your terminal (while inside the `AutomateOS` directory), run the server using Uvicorn:
+        ```bash
+        uvicorn app.main:app --reload
+        ```
+      * Open your browser to `http://127.0.0.1:8000` to see your health check message.
+Completing these steps will finish a crucial part of the "Project Foundation" task from your plan and give you a working backend to build upon.
+
 
 ---
 
