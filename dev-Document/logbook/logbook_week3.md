@@ -19,16 +19,15 @@
 - Gemini summay Todo.  The goal is to establish a solid foundation for the backend.
 ### **Day 1 Todo: Backend Project Foundation**.
 **Checklist for Today:**
-  * **[ ] 1. Create Project Directory:**
-      * Create a single root folder for your project, for example: `AutomateOS`.
-  * **[ ] 2. Set Up Virtual Environment:**
+  * **[✔️] 2. Set Up Virtual Environment:**
       * Inside the `AutomateOS` directory, create and activate a Python virtual environment. This isolates your project's dependencies.
-  * **[ ] 3. Install Core Dependencies:**
+      * Activate venv ($ source venv/Scripts/activate) [ for pip install will alway install to venv of project directory (not Global) ]
+  * **[✔️] 3. Install Core Dependencies:**
       * With your virtual environment active, use `pip` to install the essential packages for the backend:
         ```bash
         pip install fastapi "uvicorn[standard]" sqlmodel
         ```
-      * [cite\_start]This covers the web framework, server, and the library for data modeling.
+      * This covers the web framework, server, and the library for data modeling.
   * **[ ] 4. Create Initial Project Structure:**
       * [cite\_start]Set up a proper directory organization within your project folder. A good starting point is:
         ```
