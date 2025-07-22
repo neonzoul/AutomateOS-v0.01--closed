@@ -1,10 +1,12 @@
 # AutomateOS main application file
 from contextlib import asynccontextmanager
+from datetime import timedelta
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
-from . import crud, schemas
+from . import crud, schemas, security
 from .database import create_db_and_tables, get_session
 
 @asynccontextmanager
@@ -68,6 +70,45 @@ def register_user(user: schemas.UserCreate, session: Session = Depends(get_sessi
     # Create new user
     new_user = crud.create_user(session=session, user=user)
     return new_user
+
+@app.post("/auth/token", response_model=schemas.Token)
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    session: Session = Depends(get_session)
+):
+    """
+    Authenticate user and return a JWT access token.
+    
+    - **username**: User's email address (OAuth2 standard uses 'username' field)
+    - **password**: User's password
+    
+    Returns a JWT access token that can be used for authenticated requests.
+    The token expires after the configured time period (default: 30 minutes).
+    """
+    # Authenticate user using email (username field) and password
+    user = crud.authenticate_user(
+        session=session, 
+        user_credentials=schemas.UserCreate(
+            email=form_data.username, 
+            password=form_data.password
+        )
+    )
+    
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Create access token with user's email as subject
+    access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = security.create_access_token(
+        data={"sub": user.email}, 
+        expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/")
 def read_root():

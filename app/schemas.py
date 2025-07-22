@@ -11,3 +11,8 @@ class UserPublic(SQLModel):
     id: int
     email: str
     created_at: datetime
+
+# Schema for JWT token response
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "bearer"

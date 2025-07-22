@@ -15,6 +15,8 @@
 
 
 
+
+
     - Implement password hashing utilities using passlib and bcrypt
     - Create JWT token generation and validation functions
     - Build user registration endpoint with email validation

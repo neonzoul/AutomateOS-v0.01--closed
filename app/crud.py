@@ -25,3 +25,21 @@ def get_user_by_email(session: Session, email: str) -> models.User | None:
     return session.exec(
         select(models.User).where(models.User.email == email)
     ).first()
+
+def authenticate_user(session: Session, user_credentials: schemas.UserCreate) -> models.User | None:
+    """
+    Authenticate a user by email and password.
+    
+    Args:
+        session: Database session
+        user_credentials: UserCreate object containing email and password
+        
+    Returns:
+        User object if authentication successful, None otherwise
+    """
+    user = get_user_by_email(session, email=user_credentials.email)
+    if not user:
+        return None
+    if not security.verify_password(user_credentials.password, user.hashed_password):
+        return None
+    return user
