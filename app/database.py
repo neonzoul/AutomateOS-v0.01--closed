@@ -4,7 +4,7 @@ Database connection utilities for the AutomateOS application.
 This module provides the SQLModel engine setup and database initialization functions.
 """
 
-from sqlmodel import create_engine, SQLModel
+from sqlmodel import create_engine, SQLModel, Session
 
 # The database file will be named "database.db"
 DATABASE_URL = "sqlite:///database.db"
@@ -16,3 +16,9 @@ engine = create_engine(DATABASE_URL, echo=True)
 def create_db_and_tables():
     """Creates the database file and all tables based on SQLModel metadata."""
     SQLModel.metadata.create_all(engine)
+
+# Dependency to get a database session
+def get_session():
+    """Provides a database session for API endpoints."""
+    with Session(engine) as session:
+        yield session
