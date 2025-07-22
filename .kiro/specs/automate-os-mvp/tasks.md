@@ -10,7 +10,9 @@
   - _Requirements: 1.1, 1.3, 7.1_
 
 - [ ] 2. Authentication System Implementation
-  - [ ] 2.1 Backend Authentication Services
+  - [x] 2.1 Backend Authentication Services
+
+
     - Implement password hashing utilities using passlib and bcrypt
     - Create JWT token generation and validation functions
     - Build user registration endpoint with email validation

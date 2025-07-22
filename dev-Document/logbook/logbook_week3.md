@@ -1,6 +1,6 @@
 # Week 3 Logbook
 
-## Day 1 - Monday, July 20, 2025
+## Day 1 - Monday, July 21, 2025
 
 ### Summary
 Set up project foundation including frontend boilerplate and backend infrastructure with FastAPI.
@@ -127,3 +127,93 @@ app.add_middleware(
     allow_headers=["*"],
 )
 ```
+
+## Day 2 - July 22 2025
+
+* Use Kiro Spac model sonnet4.0 implement the implementation from Gemini 2.5pro Project's Assistant
+
+
+<div align="center">
+<br>
+--implementaion--
+  <details>
+
+````
+With the frontend running, you've successfully set up both the backend and frontend environments.
+
+You have now completed all the sub-tasks for the first major section of your plan: **Task 1: Project Foundation and Core Models**. This is a huge milestone.
+
+-----
+
+### Next Phase: Authentication System
+
+According to your implementation plan, the next major task is **"2. Authentication System Implementation"**. We will start with the backend services first.
+
+The first step is to create utilities for securely hashing and verifying passwords.
+
+**Today's New Todo:**
+
+1.  **Install Security Dependencies**
+
+      * In your terminal for the **backend** (the one in the root `AutomateOS` directory), install `passlib` and `bcrypt`.
+        ```bash
+        pip install "passlib[bcrypt]"
+        ```
+
+2.  **Create a `security.py` File**
+
+      * In your `app` directory, create a new file named `security.py`. This will hold all security-related functions.
+
+3.  **Add Password Hashing Logic**
+
+      * Add the following code to `app/security.py`. This sets up the context for hashing and provides functions to create and verify password hashes.
+        ```python
+        from passlib.context import CryptContext
+
+        # Use bcrypt for hashing passwords
+        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+        def verify_password(plain_password: str, hashed_password: str) -> bool:
+            """Verifies a plain password against a hashed one."""
+            return pwd_context.verify(plain_password, hashed_password)
+
+        def get_password_hash(password: str) -> str:
+            """Hashes a plain password."""
+            return pwd_context.hash(password)
+        ```
+
+This completes the first part of building your authentication system. You now have the necessary functions to handle passwords securely.
+
+````
+
+</details>
+<br>
+--Completed Tasks Summary--
+<details>
+
+````
+✅ Completed Tasks:
+1. Installed Security Dependencies: Successfully installed passlib[bcrypt] which provides secure password hashing capabilities
+2. Created app/security.py: Added the security module with password hashing utilities
+3. Implemented Password Hashing Functions:
+  - get_password_hash(): Securely hashes plain text passwords using bcrypt
+  - verify_password(): Verifies plain passwords against stored hashes
+  - Used bcrypt algorithm with proper configuration for security
+
+The implementation follows security best practices:
+   - Uses bcrypt, which is specifically designed for password hashing
+  - Includes salt generation automatically
+  - Provides secure verification without exposing the original password
+  - Uses the passlib library's CryptContext for proper configuration management
+
+This completes the password hashing utilities portion of Task 2.1. The next steps in your authentication system would be to implement JWT token generation and validation functions, followed by the user registration and login endpoints.
+````
+
+</details>
+</div>
+
+* Re-check code.
+* Take Implementation from Project's Assistant.
+  <br>
+  <div align = "center">
+  --implementation--
