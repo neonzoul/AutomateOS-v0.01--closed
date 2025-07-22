@@ -1,24 +1,23 @@
 import { useState } from 'react';
 import {
+    Box,
     Button,
-    FormControl,
-    FormLabel,
     Input,
-    Stack,
-    Heading,
-    useToast
+    VStack,
+    Heading
 } from '@chakra-ui/react';
 import axios from 'axios';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const toast = useToast();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        setIsLoading(true);
+        setLoading(true);
+        setError('');
 
         // Create form data as required by OAuth2PasswordRequestForm
         const params = new URLSearchParams();
@@ -26,7 +25,7 @@ export const LoginForm = () => {
         params.append('password', password);
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/auth/token', params, {
+            const response = await axios.post('http://127.0.0.1:8080/auth/token', params, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
@@ -34,19 +33,14 @@ export const LoginForm = () => {
 
             const accessToken = response.data.access_token;
 
-            toast({
-                title: 'Login Successful!',
-                description: `Welcome back! Token received.`,
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
+            // Show success message in console for now
+            console.log('✅ Login Successful! Welcome back!');
 
             console.log('Access Token:', accessToken);
             console.log('Token Type:', response.data.token_type);
 
-            // TODO: Store this token in localStorage or context for future API calls
-            // localStorage.setItem('access_token', accessToken);
+            // Store token in localStorage for future API calls
+            localStorage.setItem('access_token', accessToken);
 
         } catch (error: any) {
             console.error('Login error:', error);
@@ -58,54 +52,67 @@ export const LoginForm = () => {
                 errorMessage = error.response.data.detail;
             }
 
-            toast({
-                title: 'Login Failed',
-                description: errorMessage,
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
+            setError(errorMessage);
+
+            // Show error message in console for now
+            console.log('❌ Login Failed:', errorMessage);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <Stack spacing={4} width="350px" margin="auto" mt={10}>
-                <Heading size="lg" textAlign="center">Log In</Heading>
+        <Box
+            borderWidth="1px"
+            borderRadius="lg"
+            p={6}
+            boxShadow="lg"
+            bg="white"
+        >
+            <form onSubmit={handleSubmit}>
+                <VStack gap={4}>
+                    <Heading size="lg" textAlign="center">Log In</Heading>
 
-                <FormControl isRequired>
-                    <FormLabel>Email address</FormLabel>
-                    <Input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        disabled={isLoading}
-                    />
-                </FormControl>
+                    {error && (
+                        <Box p={3} bg="red.100" borderRadius="md" color="red.800" width="full">
+                            {error}
+                        </Box>
+                    )}
 
-                <FormControl isRequired>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        disabled={isLoading}
-                    />
-                </FormControl>
+                    <Box width="full">
+                        <Box mb={2} fontWeight="medium">Email address *</Box>
+                        <Input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            disabled={loading}
+                            required
+                        />
+                    </Box>
 
-                <Button
-                    type="submit"
-                    colorScheme="blue"
-                    isLoading={isLoading}
-                    loadingText="Logging in..."
-                >
-                    Log In
-                </Button>
-            </Stack>
-        </form>
+                    <Box width="full">
+                        <Box mb={2} fontWeight="medium">Password *</Box>
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            disabled={loading}
+                            required
+                        />
+                    </Box>
+
+                    <Button
+                        type="submit"
+                        colorScheme="blue"
+                        width="full"
+                        disabled={loading}
+                    >
+                        {loading ? 'Logging in...' : 'Log In'}
+                    </Button>
+                </VStack>
+            </form>
+        </Box>
     );
 };

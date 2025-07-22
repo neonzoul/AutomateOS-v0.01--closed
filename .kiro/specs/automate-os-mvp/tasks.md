@@ -19,7 +19,13 @@
     - Create /users/me endpoint for current user profile
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-  - [-] 2.2 Frontend Authentication Components
+  - [ ] 2.2 Frontend Authentication Components
+
+
+
+
+
+
 
 
 

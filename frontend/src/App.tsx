@@ -1,10 +1,10 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, Heading, Text, Container } from '@chakra-ui/react';
 import { LoginForm } from './components/auth/LoginForm';
 
 function App() {
   return (
     <Box minHeight="100vh" bg="gray.50" py={8}>
-      <Box maxWidth="md" mx="auto">
+      <Container maxW="md">
         <Heading size="xl" textAlign="center" mb={2} color="blue.600">
           AutomateOS
         </Heading>
@@ -13,9 +13,9 @@ function App() {
         </Text>
 
         <LoginForm />
-      </Box>
+      </Container>
     </Box>
   );
 }
 
-export default App
+export default App;
