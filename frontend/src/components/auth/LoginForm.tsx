@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -20,6 +21,7 @@ export const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -36,6 +38,9 @@ export const LoginForm = () => {
                 type: 'success',
                 duration: 3000,
             });
+
+            // Navigate to dashboard after successful login
+            navigate('/');
 
         } catch (error: any) {
             console.error('Login error:', error);

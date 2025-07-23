@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -21,6 +22,7 @@ export const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -48,6 +50,9 @@ export const RegisterForm = () => {
                 type: 'success',
                 duration: 3000,
             });
+
+            // Navigate to dashboard after successful registration
+            navigate('/');
 
         } catch (error: any) {
             console.error('Registration error:', error);
