@@ -6,14 +6,14 @@ import { workflowService } from '../../services/api';
 
 export const Dashboard = () => {
     const { logout } = useAuth();
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const toast = useToast();
 
     // Check API connection on mount
     useEffect(() => {
         const checkApiConnection = async () => {
             try {
-                setIsLoading(true);
+                setLoading(true);
                 await workflowService.getWorkflows();
                 // Connection successful, no need to show a message
             } catch (error) {
@@ -25,7 +25,7 @@ export const Dashboard = () => {
                     isClosable: true,
                 });
             } finally {
-                setIsLoading(false);
+                setLoading(false);
             }
         };
 

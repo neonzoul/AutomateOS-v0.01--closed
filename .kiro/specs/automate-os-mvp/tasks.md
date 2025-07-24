@@ -32,13 +32,6 @@
 
 - [ ] 3. Workflow Management System
   - [x] 3.1 Backend Workflow CRUD Operations
-
-
-
-
-
-
-
     - Implement workflow creation endpoint with JSON schema validation
     - Build workflow listing endpoint with user filtering
     - Create workflow retrieval endpoint by ID with ownership validation
@@ -46,16 +39,7 @@
     - Build workflow deletion endpoint with cascade handling
     - Generate unique webhook URLs for each workflow
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4, 4.1_
-
-
-
-
-
-
-
-
-
-  - [ ] 3.2 Frontend Workflow Dashboard
+  - [x] 3.2 Frontend Workflow Dashboard
     - Create WorkflowList component displaying user workflows
     - Build WorkflowCard component with action buttons
     - Implement workflow creation modal with basic form

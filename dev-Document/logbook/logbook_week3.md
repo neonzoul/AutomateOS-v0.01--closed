@@ -2024,3 +2024,35 @@ The automated tests confirm that all components are correctly structured and int
 The feature is ready for production use, with only minor code quality issues to address.
 ````
 </details>
+
+* **commit progress complete Task 3**
+
+* Project's Assistant advice to Code Cleanup
+<details>
+
+````
+this officially completes Task 3: Workflow Management System.
+
+Next Step: Code Cleanup
+Before moving to the next major feature, it's a software engineering best practice to address the minor code quality issues you identified in your report. This keeps the codebase healthy and easy to maintain.
+
+Cleanup Todo List:
+Fix Chakra UI Imports
+
+The errors you noted for AlertDialog, Modal, and useToast are common. Ensure they are imported directly from @chakra-ui/react.
+
+Resolve TypeScript Prop Errors
+
+Check the Chakra UI documentation for props like isLoading. The component might expect a boolean value directly, e.g., <Button isLoading={true}>.
+
+Remove Unused Variables
+
+Go through the files mentioned (WorkflowList.tsx, WorkflowCard.tsx) and remove the highlighted unused imports and variables. This is a quick but important step for code cleanliness.
+
+Next Major Feature
+Once this cleanup is complete, you will be ready to start Task 4: The Workflow Editor Interface. This is where you will build the UI for defining what a workflow actually does.
+````
+</details>
+* Gemini CLI implement
+
+*[[ Next time maybe I'll try to use GeminiCLI to provide Implementation. ]]
