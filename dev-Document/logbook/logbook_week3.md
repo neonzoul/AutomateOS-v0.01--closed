@@ -1674,3 +1674,197 @@ This completes the password hashing utilities portion of Task 2.1. The next step
   Then visit http://127.0.0.1:8001/docs to interact with the API through the Swagger UI.
   ````
   </details>
+
+* Manual test
+* Error Kiro Vibe helping fixed with start_server.py and test_workflow.api.py verify_workflow_api.py
+
+* **commit Task 3.1**
+
+* Re check with Project 
+* Assistant tell "don't finished so,
+
+---implement--
+
+<details>
+
+````
+  No, **Task 3.1 is not yet complete**.
+
+  You have successfully implemented the **Create** (`POST /workflows/`) and **Read** (`GET /workflows/`) parts. To complete the task, you still need to implement the endpoints for retrieving a single item, updating, and deleting.
+
+  Here is the full to-do list to complete the rest of Task 3.1.
+
+  -----
+
+  ### **Todo List to Complete Task 3.1**
+
+  #### **1. Get Single Workflow by ID (`GET /workflows/{id}`)**
+
+  This will allow you to fetch the details of one specific workflow.
+
+    * **In `crud.py`**, add a function to get a single workflow from the database:
+      ```python
+      # In app/crud.py
+      def get_workflow_by_id(session: Session, workflow_id: int) -> models.Workflow | None:
+          """Retrieve a single workflow by its ID."""
+          return session.get(models.Workflow, workflow_id)
+      ```
+    * **In `main.py`**, add the protected endpoint, including a security check to verify ownership:
+      ```python
+      # In app/main.py
+      @app.get("/workflows/{workflow_id}", response_model=schemas.WorkflowPublic)
+      def read_single_workflow(
+          workflow_id: int,
+          session: Session = Depends(get_session),
+          current_user: models.User = Depends(security.get_current_user)
+      ):
+          workflow = crud.get_workflow_by_id(session=session, workflow_id=workflow_id)
+          if not workflow:
+              raise HTTPException(status_code=404, detail="Workflow not found")
+          if workflow.owner_id != current_user.id:
+              raise HTTPException(status_code=403, detail="Not authorized to access this workflow")
+          return workflow
+      ```
+
+  #### **2. Update a Workflow (`PUT /workflows/{id}`)**
+
+  This will allow a user to edit an existing workflow.
+
+    * **In `schemas.py`**, create a `WorkflowUpdate` schema for incoming data:
+      ```python
+      # In app/schemas.py
+      class WorkflowUpdate(SQLModel):
+          name: Optional[str] = None
+          description: Optional[str] = None
+          definition: Optional[dict] = None
+          is_active: Optional[bool] = None
+      ```
+    * **In `crud.py`**, add the `update_workflow` function:
+      ```python
+      # In app/crud.py
+      def update_workflow(session: Session, db_workflow: models.Workflow, workflow_update: schemas.WorkflowUpdate) -> models.Workflow:
+          """Update an existing workflow."""
+          update_data = workflow_update.model_dump(exclude_unset=True)
+          db_workflow.sqlmodel_update(update_data)
+          session.add(db_workflow)
+          session.commit()
+          session.refresh(db_workflow)
+          return db_workflow
+      ```
+    * **In `main.py`**, add the `PUT` endpoint:
+      ```python
+      # In app/main.py
+      @app.put("/workflows/{workflow_id}", response_model=schemas.WorkflowPublic)
+      def update_single_workflow(
+          workflow_id: int,
+          workflow_update: schemas.WorkflowUpdate,
+          session: Session = Depends(get_session),
+          current_user: models.User = Depends(security.get_current_user)
+      ):
+          db_workflow = crud.get_workflow_by_id(session=session, workflow_id=workflow_id)
+          if not db_workflow:
+              raise HTTPException(status_code=404, detail="Workflow not found")
+          if db_workflow.owner_id != current_user.id:
+              raise HTTPException(status_code=403, detail="Not authorized to update this workflow")
+          return crud.update_workflow(session=session, db_workflow=db_workflow, workflow_update=workflow_update)
+      ```
+
+  #### **3. Delete a Workflow (`DELETE /workflows/{id}`)**
+
+  This will allow a user to remove a workflow.
+
+    * **In `crud.py`**, add the `delete_workflow` function:
+      ```python
+      # In app/crud.py
+      def delete_workflow(session: Session, db_workflow: models.Workflow):
+          """Delete a workflow."""
+          session.delete(db_workflow)
+          session.commit()
+      ```
+    * **In `main.py`**, add the `DELETE` endpoint, returning a `204 No Content` status code on success:
+      ```python
+      # In app/main.py
+      from fastapi import Response, status
+
+      @app.delete("/workflows/{workflow_id}", status_code=status.HTTP_204_NO_CONTENT)
+      def delete_single_workflow(
+          workflow_id: int,
+          session: Session = Depends(get_session),
+          current_user: models.User = Depends(security.get_current_user)
+      ):
+          db_workflow = crud.get_workflow_by_id(session=session, workflow_id=workflow_id)
+          if db_workflow and db_workflow.owner_id != current_user.id:
+              raise HTTPException(status_code=403, detail="Not authorized to delete this workflow")
+          if not db_workflow:
+              return Response(status_code=status.HTTP_204_NO_CONTENT)
+          crud.delete_workflow(session=session, db_workflow=db_workflow)
+          return Response(status_code=status.HTTP_204_NO_CONTENT)
+      ```
+````
+</details>
+
+  --- Task complete Report ---
+  <details>
+  
+  ````
+
+  ````
+  </details>
+
+  --- Kiro Test & Re-check Task 3.1 Report ---
+  <details>
+
+  ````
+    🎉 Test Results Summary
+
+  ✅ COMMIT VERIFICATION: PASSED
+
+  I've thoroughly tested the commit "feat(workflows): Add update and delete endpoints" for NomadFlow (AutomateOS-v0.1) and everything is working perfectly! Here's what I verified:
+
+  ---
+
+  ✅ All CRUD Operations Working
+  -   **CREATE**: Workflows created with unique webhook URLs.
+  -   **READ**: Both list and single workflow retrieval working.
+  -   **UPDATE**: Workflow modifications working correctly.
+  -   **DELETE**: Workflow removal working properly.
+
+  ---
+
+  ✅ Security & Authentication
+  -   JWT authentication required and working.
+  -   User ownership validation enforced.
+  -   Cross-user access properly blocked.
+  -   Password hashing with bcrypt working.
+
+  ---
+
+  ✅ Data Validation & Error Handling
+  -   Input validation returning proper `422` errors.
+  -   `404` errors for non-existent resources.
+  -   `401` errors for unauthorized access.
+  -   Unicode and special characters handled correctly.
+
+  ---
+
+  ✅ Advanced Features
+  -   Large workflow definitions (100+ nodes) handled.
+  -   Concurrent operations working safely.
+  -   Database transactions working properly.
+  -   Proper SQL query generation and optimization.
+
+  ---
+
+  ✅ Production Ready
+  -   All endpoints follow FastAPI best practices.
+  -   Comprehensive error handling.
+  -   Efficient database operations.
+  -   Ready for frontend integration.
+
+  ---
+
+  The implementation is solid, secure, and ready for the next phase of development. You can confidently proceed to Task 3.2 - Frontend Workflow Dashboard to build the UI components that will interact with these robust backend endpoints.
+  ````
+  </details>
+  
+  * Can see test result in test_report.md 
