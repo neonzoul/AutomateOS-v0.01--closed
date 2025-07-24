@@ -4,8 +4,6 @@ import {
     Input,
     Textarea,
     VStack,
-} from '@chakra-ui/react';
-import {
     Modal,
     ModalOverlay,
     ModalContent,
@@ -13,22 +11,20 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-} from '@chakra-ui/react';
-import {
     FormControl,
     FormLabel,
     Switch,
+    useToast,
 } from '@chakra-ui/react';
-import { useToast } from '@chakra-ui/react';
 import { workflowService } from '../../services/api';
 
 interface CreateWorkflowModalProps {
-    isOpen: boolean;
+    open: boolean;
     onClose: () => void;
     onWorkflowCreated: () => void;
 }
 
-export const CreateWorkflowModal = ({ isOpen, onClose, onWorkflowCreated }: CreateWorkflowModalProps) => {
+export const CreateWorkflowModal = ({ open, onClose, onWorkflowCreated }: CreateWorkflowModalProps) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -39,14 +35,14 @@ export const CreateWorkflowModal = ({ isOpen, onClose, onWorkflowCreated }: Crea
 
     // Reset form when modal opens/closes
     useEffect(() => {
-        if (isOpen) {
+        if (open) {
             setFormData({
                 name: '',
                 description: '',
                 is_active: true,
             });
         }
-    }, [isOpen]);
+    }, [open]);
 
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
@@ -63,7 +59,7 @@ export const CreateWorkflowModal = ({ isOpen, onClose, onWorkflowCreated }: Crea
         try {
             setLoading(true);
             // Create the workflow using createWorkflow API
-            const createdWorkflow = await workflowService.createWorkflow({
+            await workflowService.createWorkflow({
                 name: formData.name.trim(),
                 description: formData.description.trim() || undefined,
                 definition: {
@@ -115,7 +111,7 @@ export const CreateWorkflowModal = ({ isOpen, onClose, onWorkflowCreated }: Crea
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} size="md">
+        <Modal isOpen={open} onClose={handleClose} size="md">
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Create New Workflow</ModalHeader>
@@ -150,7 +146,7 @@ export const CreateWorkflowModal = ({ isOpen, onClose, onWorkflowCreated }: Crea
                             </FormLabel>
                             <Switch
                                 id="is-active"
-                                checked={formData.is_active}
+                                isChecked={formData.is_active}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                     setFormData({ ...formData, is_active: e.target.checked })
                                 }
@@ -167,8 +163,7 @@ export const CreateWorkflowModal = ({ isOpen, onClose, onWorkflowCreated }: Crea
                     <Button
                         colorScheme="blue"
                         onClick={handleSubmit}
-                        loading={loading}
-                        data-loading-text="Creating..."
+                        isLoading={loading}
                     >
                         Create Workflow
                     </Button>

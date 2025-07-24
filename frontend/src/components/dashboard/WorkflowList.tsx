@@ -10,16 +10,14 @@ import {
     Spinner,
     Center,
     useDisclosure,
-} from '@chakra-ui/react';
-import {
     AlertDialog,
     AlertDialogBody,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogContent,
     AlertDialogOverlay,
+    useToast,
 } from '@chakra-ui/react';
-import { useToast } from '@chakra-ui/react';
 import { workflowService } from '../../services/api';
 import { WorkflowCard } from './WorkflowCard';
 import { CreateWorkflowModal } from './CreateWorkflowModal';
@@ -38,8 +36,8 @@ export const WorkflowList = () => {
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleteWorkflowId, setDeleteWorkflowId] = useState<number | null>(null);
-    const { isOpen: isDeleteDialogOpen, onOpen: openDeleteDialog, onClose: closeDeleteDialog } = useDisclosure();
-    const { isOpen: isCreateModalOpen, onOpen: openCreateModal, onClose: closeCreateModal } = useDisclosure();
+    const { open: isDeleteDialogOpen, onOpen: openDeleteDialog, onClose: closeDeleteDialog } = useDisclosure();
+    const { open: isCreateModalOpen, onOpen: openCreateModal, onClose: closeCreateModal } = useDisclosure();
     const cancelRef = useRef<HTMLButtonElement>(null);
     const toast = useToast();
 
@@ -61,31 +59,7 @@ export const WorkflowList = () => {
         }
     };
 
-    // Function to create a new workflow
-    const createWorkflow = async (workflowData: any) => {
-        try {
-            // Call the createWorkflow API
-            const newWorkflow = await workflowService.createWorkflow(workflowData);
-            setWorkflows([...workflows, newWorkflow]);
-            toast({
-                title: 'Workflow created',
-                description: 'New workflow has been created successfully.',
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            });
-            return newWorkflow;
-        } catch (error) {
-            toast({
-                title: 'Error creating workflow',
-                description: 'Failed to create the workflow. Please try again.',
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-            throw error;
-        }
-    };
+    // Removed unused createWorkflow function
 
     const handleDeleteWorkflow = async () => {
         if (!deleteWorkflowId) return;
@@ -137,7 +111,7 @@ export const WorkflowList = () => {
     if (loading) {
         return (
             <Center py={8}>
-                <VStack spacing={4}>
+                <VStack gap="4">
                     <Spinner size="lg" color="blue.500" />
                     <Text color="gray.600">Loading workflows...</Text>
                 </VStack>

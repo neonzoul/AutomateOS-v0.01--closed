@@ -9,7 +9,6 @@ import {
     VStack,
     Badge,
     useToast,
-    Spinner,
 } from '@chakra-ui/react';
 import { workflowService } from '../../services/api';
 
@@ -40,17 +39,6 @@ export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) 
             created: new Date(workflow.created_at).toLocaleDateString(),
             updated: new Date(workflow.updated_at).toLocaleDateString()
         });
-
-        // Verify workflow exists in the backend
-        const verifyWorkflow = async () => {
-            try {
-                await workflowService.getWorkflow(workflow.id);
-            } catch (error) {
-                console.error('Error verifying workflow:', error);
-            }
-        };
-
-        verifyWorkflow();
     }, [workflow]);
 
     const copyWebhookUrl = async () => {
@@ -116,7 +104,6 @@ export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) 
                             colorScheme="blue"
                             onClick={copyWebhookUrl}
                             isLoading={copying}
-                            loadingText="Copying..."
                         >
                             Copy
                         </Button>
