@@ -1408,141 +1408,269 @@ This completes the password hashing utilities portion of Task 2.1. The next step
   </details>
 
 * **commit updated**
-
+* **commit progress task 2 finished.**
 
 
 ## Day 4 - July 24 2025
+
+* Recap current state with Project's Assistant.
+* Assign Todo for Task 3.1.
+* Assign Kiro implement.
 
 --- Task 3.1 Implementation. (project Assistant.) ---
 
   <details>
 
   ````
-  This is an absolutely phenomenal update\! The level of detail in your implementation and testing summary is professional-grade. Congratulations on building and verifying the entire end-to-end authentication system.
 
-  You have now completed all of **Task 2: Authentication System Implementation**.
+  Based on our last conversation, the immediate next step is to finish the backend endpoint that allows a logged-in user to retrieve their list of workflows. This is the first part of **Task 3.1: Backend Workflow CRUD Operations**.
 
-  With users able to log in, it's time to build the core feature of the application: creating and managing workflows.
+  This task directly uses the authentication system you just built to protect a route, which is a key requirement.
 
   -----
 
-  ### Next Phase: Workflow Management System (Backend)
+  ### Todo for Today: Build the "List Workflows" API
 
-  According to your plan, the next major step is **Task 3.1: Backend Workflow CRUD Operations**. We'll start by creating a **protected endpoint** that allows a logged-in user to create their first workflow.
+  Your goal is to complete the backend functionality for a logged-in user to see all their created workflows.
 
-  1.  **Create Schemas for Workflows**
+  1.  **Update `crud.py` to Get Workflows**
 
-        * You need to define the data shapes for creating and displaying workflows.
-        * Add these classes to `app/schemas.py`:
-          ```python
-          # In app/schemas.py
-          from typing import Optional, List
-
-          # ... keep UserCreate and UserPublic ...
-
-          class WorkflowCreate(SQLModel):
-              name: str
-              description: Optional[str] = None
-              definition: dict # The JSON definition of the workflow
-
-          class WorkflowPublic(SQLModel):
-              id: int
-              name: str
-              description: Optional[str]
-              webhook_url: str
-              is_active: bool
-              owner_id: int
-          ```
-
-  2.  **Create a Dependency to Get the Current User**
-
-        * This is the core of a protected route. It's a function that validates the JWT from the request header and returns the user from the database.
-        * Add the following to `app/security.py`:
-          ```python
-          # In app/security.py
-          from fastapi import Depends, HTTPException, status
-          from fastapi.security import OAuth2PasswordBearer
-          from sqlmodel import Session
-          from . import crud, models
-          from .database import get_session
-
-          # This tells FastAPI where to look for the token
-          oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
-
-          def get_current_user(
-              token: str = Depends(oauth2_scheme), 
-              session: Session = Depends(get_session)
-          ) -> models.User:
-              credentials_exception = HTTPException(
-                  status_code=status.HTTP_401_UNAUTHORIZED,
-                  detail="Could not validate credentials",
-                  headers={"WWW-Authenticate": "Bearer"},
-              )
-              try:
-                  payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-                  email: str = payload.get("sub")
-                  if email is None:
-                      raise credentials_exception
-              except JWTError:
-                  raise credentials_exception
-              
-              user = crud.get_user_by_email(session, email=email)
-              if user is None:
-                  raise credentials_exception
-              return user
-          ```
-
-  3.  **Update `crud.py` to Create Workflows**
-
-        * Add a function to handle the database logic for creating a new workflow.
-        * Add this to `app/crud.py`:
+        * Add the following function to your `app/crud.py` file. This function will query the database for all workflows owned by a specific user.
           ```python
           # In app/crud.py
-          import uuid
+          from typing import List
+          # ... keep other imports and functions ...
 
-          # ... keep other functions ...
-
-          def create_workflow(session: Session, workflow: schemas.WorkflowCreate, owner_id: int) -> models.Workflow:
-              """Create a new workflow in the database."""
-              # Generate a unique webhook URL
-              webhook_url = f"/webhooks/{uuid.uuid4()}"
-              
-              db_workflow = models.Workflow(
-                  name=workflow.name,
-                  description=workflow.description,
-                  definition=workflow.definition,
-                  webhook_url=webhook_url,
-                  owner_id=owner_id
-              )
-              session.add(db_workflow)
-              session.commit()
-              session.refresh(db_workflow)
-              return db_workflow
+          def get_workflows_by_owner(session: Session, owner_id: int) -> List[models.Workflow]:
+              """Retrieve all workflows for a specific owner."""
+              return session.exec(select(models.Workflow).where(models.Workflow.owner_id == owner_id)).all()
           ```
 
-  4.  **Build the Protected "Create Workflow" Endpoint**
+  2.  **Build the Protected "List Workflows" Endpoint**
 
-        * Finally, create the `POST /workflows` endpoint in `app/main.py`. Note how it `Depends` on `get_current_user`.
-        * Add this endpoint to `app/main.py`:
+        * Add the new protected `GET /workflows/` endpoint to your `app/main.py` file. This endpoint will use your `get_current_user` dependency to ensure only an authenticated user can access it.
           ```python
           # In app/main.py
-          from . import security, models
+          from typing import List
+          # ... keep other imports and code ...
 
-          # ... keep other code ...
-
-          @app.post("/workflows/", response_model=schemas.WorkflowPublic)
-          def create_new_workflow(
-              workflow: schemas.WorkflowCreate,
+          @app.get("/workflows/", response_model=List[schemas.WorkflowPublic])
+          def read_user_workflows(
               session: Session = Depends(get_session),
               current_user: models.User = Depends(security.get_current_user)
           ):
-              """Creates a new workflow for the current authenticated user."""
-              new_workflow = crud.create_workflow(
-                  session=session, workflow=workflow, owner_id=current_user.id
-              )
-              return new_workflow
+              """Retrieves all workflows for the current authenticated user."""
+              return crud.get_workflows_by_owner(session=session, owner_id=current_user.id)
+
+          # ... keep other endpoints ...
           ```
 
-  Now you have a protected endpoint. To test it in the API docs, you must first use the `/auth/token` endpoint to get a token, then click the "Authorize" button at the top right and paste the token in. After that, you can successfully use the `/workflows/` endpoint.
+  3.  **Manual Test Plan**
+
+        * Start your backend server (`python -m uvicorn app.main:app --reload`).
+        * Go to the API docs at `http://127.0.0.1:8000/docs`.
+        * **Authorize:** Use the `/auth/token` endpoint to log in with a test user. Copy the `access_token` from the response. Click the "Authorize" button at the top right, paste `Bearer <your_token>` into the box, and authorize.
+        * **Create a Workflow (If Needed):** Use the `POST /workflows/` endpoint to create one or two sample workflows for your test user.
+        * **Test the New Endpoint:** Find the `GET /workflows/` endpoint, click "Try it out", and then "Execute". The response should be a `200 OK` with a JSON list of the workflows you just created.
+
+  Completing this will make your backend ready to supply the data needed for the frontend dashboard.
+
+
+    The first step is to update your `app/crud.py` file to add a function that retrieves all workflows belonging to a specific user from the database. This is a core part of building the workflow listing endpoint.
+
+  The first step is to update your `app/crud.py` file to add a function that retrieves all workflows belonging to a specific user from the database. This is a core part of building the workflow listing endpoint.
+
+  -----
+
+  ### **Step 1: Update `crud.py`**
+
+  Add the following function to your `app/crud.py` file. This function takes a database session and a user's ID, then queries the `Workflow` table for all records matching that `owner_id`.
+
+  ```python
+  # In app/crud.py
+  from typing import List
+  from sqlmodel import Session, select
+  from . import models, schemas, security
+
+  # ... keep other functions (create_user, get_user_by_email, etc.) ...
+
+  def get_workflows_by_owner(session: Session, owner_id: int) -> List[models.Workflow]:
+      """Retrieve all workflows for a specific owner."""
+      return session.exec(select(models.Workflow).where(models.Workflow.owner_id == owner_id)).all()
+  ```
+
+  ````
+  </details>
+
+  --- Task Completed Report---
+  <details>
+
+  ````
+    successfully added the get_workflows_by_owner function to your crud.py file. Here's what was implemented:
+
+  Added the List import from typing to support the return type annotation
+  Added the get_workflows_by_owner function that:
+  Takes a database session and owner_id as parameters
+  Uses SQLModel's select to query the Workflow table
+  Filters by owner_id to get only workflows belonging to that user
+  Returns all matching workflows as a list
+  The function is now ready to be used by your API endpoint. This completes the first step of Task 3.1. The function will allow you to retrieve all workflows owned by a specific user, which is exactly what you need for the protected /workflows/ endpoint.
+  ````
+  </details>
+
+* implement step 2 with Project Assistant implementation, Kiro implement.
+
+  ---implementaion----
+  <details>
+  
+  ````
+    Excellent. With the CRUD function in place, you're ready for the next step: creating the protected API endpoint in `app/main.py` that will use this new function.
+
+  -----
+
+  ## **Step 2: Build the "List Workflows" Endpoint**
+
+  Add the following code to your `app/main.py` file. This creates the `GET /workflows/` endpoint that retrieves workflows for the currently authenticated user.
+
+  ```python
+  # In app/main.py
+  from typing import List
+  from sqlmodel import Session
+  from fastapi import Depends
+  from . import crud, models, schemas, security
+  from .database import get_session
+
+  # ... (keep other imports and the top part of your file) ...
+
+  @app.get("/workflows/", response_model=List[schemas.WorkflowPublic])
+  def read_user_workflows(
+      session: Session = Depends(get_session),
+      current_user: models.User = Depends(security.get_current_user)
+  ):
+      """Retrieves all workflows for the current authenticated user."""
+      return crud.get_workflows_by_owner(session=session, owner_id=current_user.id)
+
+  # ... (keep your other endpoints like /register and /auth/token) ...
+  ```
+
+  ### **How It Works**
+
+    * `@app.get("/workflows/", ...)`: This defines the route for the new endpoint.
+    * `response_model=List[schemas.WorkflowPublic]`: This tells FastAPI to format the output as a list of `WorkflowPublic` objects, ensuring no sensitive data is exposed.
+    * `current_user: models.User = Depends(security.get_current_user)`: This is the crucial security feature. It requires a valid JWT token for access. If the token is invalid or missing, the request is automatically rejected. If it's valid, the function gets access to the logged-in user's data.
+  ````
+  </details>
+
+  ---task Complete Report---
+  <details>
+
+  ````
+    "List Workflows" API is fully implemented and operational for NomadFlow (AutomateOS-v0.1).
+
+  ✅ Implemented Features:
+
+  * **CRUD Function**: `get_workflows_by_owner()` in `crud.py` to query workflows by owner ID.
+  * **Protected Endpoint**: `GET /workflows/` in `main.py` with JWT authentication.
+  * **Response Model**: Returns `List[schemas.WorkflowPublic]`.
+  * **Security**: Employs `get_current_user` dependency to ensure users access only their own workflows.
+
+  This implementation aligns with the defined pattern: utilizing `get_current_user` for authentication, filtering workflows by authenticated user ID, and providing a properly typed response.
+
+  To test, start the server (`python -m uvicorn app.main:app --reload`), access Swagger UI (`http://127.0.0.1:8000/docs`), authenticate with a user token, and test the `GET /workflows/` endpoint.
+
+  The API is ready to supply data to your frontend dashboard.
+  ````
+  </details>
+
+* **Task 3.1 Complete**
+* Verify result before move to next.
+
+  --- Verify Task ---
+  <details>
+  
+  ````
+    You can check that the backend API for creating and listing workflows is working correctly and securely.
+
+  -----
+
+  ### Verification Checklist for Task 3.1 (Current Progress)
+
+  Before moving on, use the API docs at `http://127.0.0.1:8000/docs` to verify the following results. Make sure you are **authorized** with a user's token for these tests.
+
+    * **Successful Workflow Creation**
+
+        * **Action**: Use the `POST /workflows/` endpoint. Provide a simple JSON body like:
+          ```json
+          {
+            "name": "My Test Workflow",
+            "description": "A test.",
+            "definition": { "nodes": [] }
+          }
+          ```
+        * **Expected Result**: You should get a `200 OK` response containing the full details of the newly created workflow, including an `id` and a unique `webhook_url`. This confirms the creation endpoint is working.
+
+    * **Correct Workflow Listing**
+
+        * **Action**: Use the `GET /workflows/` endpoint.
+        * **Expected Result**: You should get a `200 OK` response with a list containing the workflow you just created. This confirms the listing endpoint works and correctly filters by user.
+
+    * **Route Protection**
+
+        * **Action**: In the API docs, click the "Authorize" button and then "Logout" to clear your token. Now, try to use either the `GET /workflows/` or `POST /workflows/` endpoint again.
+        * **Expected Result**: You must receive a `401 Unauthorized` error. This confirms your route protection is correctly implemented.
+  ````
+  </details>
+
+  --- Verify Report ---
+  <details>
+
+  ````
+    ✅ Verification Complete - Task 3.1 Backend API
+  I've successfully verified that the backend API for creating and listing workflows is working correctly and securely. Here's the complete verification summary:
+
+  🎯 Verification Results
+  ✅ 1. Successful Workflow Creation
+
+  Action: POST /workflows/ with test JSON data
+  Result: 200 OK response received
+  Verified:
+  Workflow created with unique ID (1)
+  Generated unique webhook URL (/webhook/02baf3e2-a5cc-4030-83ab-61efbaea8990)
+  All required fields present (id, name, description, definition, webhook_url)
+  Proper JSON structure maintained
+  ✅ 2. Correct Workflow Listing
+
+  Action: GET /workflows/ endpoint
+  Result: 200 OK response with workflow list
+  Verified:
+  Returns exactly 1 workflow (the one we created)
+  Correctly filters workflows by authenticated user
+  Proper workflow data structure returned
+  ✅ 3. Route Protection
+
+  Action: Tested endpoints without authorization token
+  Results:
+  GET /workflows/ without token: 401 Unauthorized ✅
+  POST /workflows/ without token: 401 Unauthorized ✅
+  GET /workflows/ with invalid token: 401 Unauthorized ✅
+  Verified: All protected routes properly reject unauthorized access
+  🔧 Technical Details
+  Server: Running on http://127.0.0.1:8001
+  API Documentation: Available at http://127.0.0.1:8001/docs
+  Authentication: JWT Bearer token system working correctly
+  Database: SQLite with proper user isolation
+  CORS: Configured for frontend integration
+  📋 Test Data Used
+  {
+    "name": "My Test Workflow",
+    "description": "A test.",
+    "definition": { "nodes": [] }
+  }
+  The backend API is fully functional and secure, meeting all requirements for Task 3.1. You can now proceed with confidence that the workflow creation and listing endpoints are working correctly with proper authentication and authorization.
+
+  To test manually, start the server with:
+
+  python -m uvicorn app.main:app --host 127.0.0.1 --port 8001
+  Then visit http://127.0.0.1:8001/docs to interact with the API through the Swagger UI.
   ````
   </details>

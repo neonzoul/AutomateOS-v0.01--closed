@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel
 from datetime import datetime
+from typing import Optional
 
 # Schema for creating a new user (input)
 class UserCreate(SQLModel):
@@ -16,3 +17,22 @@ class UserPublic(SQLModel):
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
+
+# Schema for creating a new workflow (input)
+class WorkflowCreate(SQLModel):
+    name: str
+    description: Optional[str] = None
+    definition: dict
+    is_active: bool = True
+
+# Schema for reading workflow data (output)
+class WorkflowPublic(SQLModel):
+    id: int
+    name: str
+    description: Optional[str]
+    definition: dict
+    webhook_url: str
+    is_active: bool
+    owner_id: int
+    created_at: datetime
+    updated_at: datetime

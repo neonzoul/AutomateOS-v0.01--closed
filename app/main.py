@@ -1,12 +1,13 @@
 # AutomateOS main application file
 from contextlib import asynccontextmanager
 from datetime import timedelta
+from typing import List
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
-from . import crud, schemas, security
+from . import crud, schemas, security, models
 from .database import create_db_and_tables, get_session
 
 @asynccontextmanager
@@ -113,3 +114,88 @@ def login_for_access_token(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to AutomateOS API"}
+
+@app.get("/workflows/", response_model=List[schemas.WorkflowPublic])
+def read_user_workflows(
+    session: Session = Depends(get_session),
+    current_user: models.User = Depends(security.get_current_user)
+):
+    """
+    Retrieve all workflows for the current authenticated user.
+    
+    Returns a list of workflows owned by the authenticated user.
+    Requires valid JWT token in Authorization header.
+    """
+    return crud.get_workflows_by_owner(session=session, owner_id=current_user.id)
+
+@app.post("/workflows/", response_model=schemas.WorkflowPublic)
+def create_workflow(
+    workflow: schemas.WorkflowCreate,
+    session: Session = Depends(get_session),
+    current_user: models.User = Depends(security.get_current_user)
+):
+    """
+    Create a new workflow for the current authenticated user.
+    
+    - **name**: Workflow name
+    - **description**: Optional workflow description  
+    - **definition**: Workflow configuration as JSON
+    - **is_active**: Whether the workflow is active (default: true)
+    
+    Returns the created workflow with generated webhook URL.
+    """
+    return crud.create_workflow(session=session, workflow=workflow, owner_id=current_user.id)
+
+@app.get("/workflows/{workflow_id}", response_model=schemas.WorkflowPublic)
+def read_workflow(
+    workflow_id: int,
+    session: Session = Depends(get_session),
+    current_user: models.User = Depends(security.get_current_user)
+):
+    """
+    Retrieve a specific workflow by ID.
+    
+    Returns the workflow if it exists and belongs to the authenticated user.
+    """
+    workflow = crud.get_workflow_by_id(session=session, workflow_id=workflow_id, owner_id=current_user.id)
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return workflow
+
+@app.put("/workflows/{workflow_id}", response_model=schemas.WorkflowPublic)
+def update_workflow(
+    workflow_id: int,
+    workflow_update: schemas.WorkflowCreate,
+    session: Session = Depends(get_session),
+    current_user: models.User = Depends(security.get_current_user)
+):
+    """
+    Update an existing workflow.
+    
+    Updates the workflow if it exists and belongs to the authenticated user.
+    """
+    workflow = crud.update_workflow(
+        session=session, 
+        workflow_id=workflow_id, 
+        workflow_update=workflow_update, 
+        owner_id=current_user.id
+    )
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return workflow
+
+@app.delete("/workflows/{workflow_id}")
+def delete_workflow(
+    workflow_id: int,
+    session: Session = Depends(get_session),
+    current_user: models.User = Depends(security.get_current_user)
+):
+    """
+    Delete a workflow by ID.
+    
+    Deletes the workflow if it exists and belongs to the authenticated user.
+    """
+    success = crud.delete_workflow(session=session, workflow_id=workflow_id, owner_id=current_user.id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return {"message": "Workflow deleted successfully"}
