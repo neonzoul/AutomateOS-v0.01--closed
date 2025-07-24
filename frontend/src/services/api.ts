@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8080',
+    baseURL: 'http://127.0.0.1:8000',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -46,7 +46,7 @@ export const authService = {
         params.append('password', password);
 
         const response = await axios.post('/auth/token', params, {
-            baseURL: 'http://127.0.0.1:8080',
+            baseURL: 'http://127.0.0.1:8000',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -59,7 +59,7 @@ export const authService = {
             email,
             password
         }, {
-            baseURL: 'http://127.0.0.1:8080',
+            baseURL: 'http://127.0.0.1:8000',
         });
         return response.data;
     },
@@ -72,32 +72,32 @@ export const authService = {
 
 export const workflowService = {
     getWorkflows: async () => {
-        const response = await api.get('/api/v1/workflows');
+        const response = await api.get('/workflows/');
         return response.data;
     },
 
     createWorkflow: async (workflow: any) => {
-        const response = await api.post('/api/v1/workflows', workflow);
+        const response = await api.post('/workflows/', workflow);
         return response.data;
     },
 
     getWorkflow: async (id: number) => {
-        const response = await api.get(`/api/v1/workflows/${id}`);
+        const response = await api.get(`/workflows/${id}`);
         return response.data;
     },
 
     updateWorkflow: async (id: number, workflow: any) => {
-        const response = await api.put(`/api/v1/workflows/${id}`, workflow);
+        const response = await api.put(`/workflows/${id}`, workflow);
         return response.data;
     },
 
     deleteWorkflow: async (id: number) => {
-        const response = await api.delete(`/api/v1/workflows/${id}`);
+        const response = await api.delete(`/workflows/${id}`);
         return response.data;
     },
 
     getWorkflowLogs: async (id: number) => {
-        const response = await api.get(`/api/v1/workflows/${id}/logs`);
+        const response = await api.get(`/workflows/${id}/logs`);
         return response.data;
     },
 };

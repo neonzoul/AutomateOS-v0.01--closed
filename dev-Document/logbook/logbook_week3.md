@@ -1868,3 +1868,74 @@ This completes the password hashing utilities portion of Task 2.1. The next step
   </details>
   
   * Can see test result in test_report.md 
+* Send test and implement state to Assistant
+* Implement Dashboard.
+
+--- 
+<details>
+
+````
+
+Based on Kiro's reports, you have successfully implemented and tested the entire backend API for managing workflows.
+
+**Your current state is: Task 3.1 is officially complete.**
+
+-----
+
+## Project Status Summary
+
+  * ✅ **Task 1:** Project Foundation and Core Models
+  * ✅ **Task 2:** Authentication System Implementation
+  * ✅ **Task 3.1:** Backend Workflow CRUD Operations
+  * ➡️ **Task 3.2:** Frontend Workflow Dashboard (This is your next task)
+
+-----
+
+## Next Step: Build the Frontend Dashboard
+
+Now that your backend is ready, you can build the user interface to manage workflows, which is **Task 3.2: Frontend Workflow Dashboard**.
+
+You already have a `WorkflowList` component that displays the workflows. The first step is to make it more interactive by adding action buttons.
+
+### **Todo: Add Action Buttons to the Workflow List**
+
+Modify your `WorkflowList.tsx` component to include "View/Edit" and "Delete" buttons for each workflow.
+
+```tsx
+// In frontend/src/components/dashboard/WorkflowList.tsx
+// ... imports
+import { Button, ButtonGroup, HStack } from '@chakra-ui/react';
+
+// ... interface and component setup ...
+// ... inside the return statement ...
+
+<Stack spacing={4}>
+  {workflows.map((workflow) => (
+    <Box key={workflow.id} p={5} shadow="md" borderWidth="1px" borderRadius="md">
+      <HStack justifyContent="space-between">
+        <Box>
+          <Heading fontSize="xl">{workflow.name}</Heading>
+          <Text mt={2}>{workflow.description || 'No description.'}</Text>
+        </Box>
+        <ButtonGroup>
+          <Button size="sm">View/Edit</Button>
+          <Button size="sm" colorScheme="red">Delete</Button>
+        </ButtonGroup>
+      </HStack>
+    </Box>
+  ))}
+</Stack>
+
+// ...
+```
+
+This change will visually add the buttons. In the next steps, we will wire them up to perform the update and delete actions using the API endpoints you just built.
+````
+</details>
+
+* Ask Kiro test before commit.
+* To day Sonnet4 have many request working interupted many time.
+* Many time while implement I have to re-try.
+* And every time that re-try task Agent will re understand context of qury...every time
+  - that can be trait, more action = more error
+  - so, Solution is I have to more concern about model and task, If important or complex task use 4.0 , If just simple or not necessary (like test) we can use 3.5
