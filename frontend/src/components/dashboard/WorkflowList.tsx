@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -21,7 +21,6 @@ import {
     DialogHeader,
     DialogRoot,
     DialogTitle,
-    DialogTrigger,
 } from '@chakra-ui/react';
 import { workflowService } from '../../services/api';
 import { WorkflowCard } from './WorkflowCard';
@@ -140,7 +139,7 @@ export const WorkflowList = () => {
                 </Button>
             </HStack>
 
-            <Stack spacing="4">
+            <Stack gap="4">
                 {workflows.map((workflow) => (
                     <WorkflowCard
                         key={workflow.id}

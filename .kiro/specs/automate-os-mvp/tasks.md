@@ -62,7 +62,9 @@
     - Add node validation and real-time feedback
     - _Requirements: 3.1, 3.2, 3.3, 5.1, 5.2_
 
-  - [-] 4.2 Workflow Editor Core
+  - [x] 4.2 Workflow Editor Core
+
+
 
 
 

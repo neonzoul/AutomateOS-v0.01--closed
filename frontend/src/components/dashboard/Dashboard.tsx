@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box, Button, Heading, HStack, Container, createToaster } from '@chakra-ui/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { WorkflowList } from './WorkflowList';
@@ -10,13 +10,11 @@ const toaster = createToaster({
 
 export const Dashboard = () => {
     const { logout } = useAuth();
-    const [loading, setLoading] = useState(false);
 
     // Check API connection on mount
     useEffect(() => {
         const checkApiConnection = async () => {
             try {
-                setLoading(true);
                 await workflowService.getWorkflows();
                 // Connection successful, no need to show a message
             } catch (error) {
@@ -26,8 +24,6 @@ export const Dashboard = () => {
                     type: 'error',
                     duration: 5000,
                 });
-            } finally {
-                setLoading(false);
             }
         };
 

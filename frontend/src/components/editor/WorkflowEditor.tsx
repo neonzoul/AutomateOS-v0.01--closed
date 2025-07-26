@@ -10,14 +10,15 @@ import {
     Textarea,
     NativeSelectRoot,
     NativeSelectField,
-    Alert,
-    Separator,
+
+
     createToaster,
     Spinner,
 } from '@chakra-ui/react';
 import { LuPlus, LuSave, LuPlay, LuArrowLeft, LuArrowUp, LuArrowDown } from 'react-icons/lu';
 import { Layout } from '../common/Layout';
-import { NodeBase, NodeConfig, NodeValidation } from './NodeBase';
+import { NodeBase } from './NodeBase';
+import type { NodeConfig, NodeValidation } from './NodeBase';
 import { WebhookTriggerNode } from './nodes/WebhookTriggerNode';
 import { HTTPRequestNode } from './nodes/HTTPRequestNode';
 import { FilterNode } from './nodes/FilterNode';
@@ -338,7 +339,10 @@ export const WorkflowEditor: React.FC = () => {
                     onDelete={deleteNode}
                     validation={validationResults[node.id]}
                 >
-                    <NodeComponent />
+                    <NodeComponent
+                        config={node.config}
+                        onConfigUpdate={(config: Record<string, any>) => updateNode(node.id, config)}
+                    />
                 </NodeBase>
             </Box>
         );
@@ -458,11 +462,11 @@ export const WorkflowEditor: React.FC = () => {
                     </HStack>
 
                     {workflow.definition.nodes.length === 0 && (
-                        <Alert status="info" mt={3}>
-                            <Text fontSize="sm">
+                        <Box bg="blue.50" p={3} borderRadius="md" mt={3}>
+                            <Text fontSize="sm" color="blue.700">
                                 Start by adding a Webhook Trigger node to define how your workflow will be triggered.
                             </Text>
-                        </Alert>
+                        </Box>
                     )}
                 </Box>
 

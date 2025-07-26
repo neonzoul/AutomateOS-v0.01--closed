@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Button, Container, Heading } from '@chakra-ui/react';
+import { VStack, Container, Heading } from '@chakra-ui/react';
 import { NodeBase, WebhookTriggerNode, HTTPRequestNode, FilterNode, validateNode } from './index';
 import type { NodeConfig } from './index';
 

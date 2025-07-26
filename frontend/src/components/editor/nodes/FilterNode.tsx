@@ -10,7 +10,6 @@ import {
     Box,
     IconButton,
     Separator,
-    Checkbox,
 } from '@chakra-ui/react';
 import { LuPlus, LuTrash2 } from 'react-icons/lu';
 
@@ -131,14 +130,14 @@ export const FilterNode: React.FC<FilterNodeProps> = ({
                     Continue workflow when conditions are:
                 </Text>
                 <HStack>
-                    <Checkbox
-                        checked={continueOn}
-                        onCheckedChange={(details: any) => updateContinueOn(details.checked)}
+                    <Button
+                        size="sm"
+                        variant={continueOn ? "solid" : "outline"}
                         colorPalette="green"
-                    />
-                    <Text fontSize="sm">
+                        onClick={() => updateContinueOn(!continueOn)}
+                    >
                         {continueOn ? 'Met (true)' : 'Not met (false)'}
-                    </Text>
+                    </Button>
                 </HStack>
             </Box>
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: 'http://127.0.0.1:8002',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -46,7 +46,7 @@ export const authService = {
         params.append('password', password);
 
         const response = await axios.post('/auth/token', params, {
-            baseURL: 'http://127.0.0.1:8000',
+            baseURL: 'http://127.0.0.1:8002',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -59,7 +59,7 @@ export const authService = {
             email,
             password
         }, {
-            baseURL: 'http://127.0.0.1:8000',
+            baseURL: 'http://127.0.0.1:8002',
         });
         return response.data;
     },
