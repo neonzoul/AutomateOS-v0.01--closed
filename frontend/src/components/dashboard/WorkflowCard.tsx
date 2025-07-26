@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Heading,
     Text,
     Button,
-    ButtonGroup,
     HStack,
     VStack,
     Badge,
-    useToast,
+    createToaster,
 } from '@chakra-ui/react';
-import { workflowService } from '../../services/api';
 
 interface Workflow {
     id: number;
@@ -24,14 +23,17 @@ interface Workflow {
 
 interface WorkflowCardProps {
     workflow: Workflow;
-    onEdit: (workflow: Workflow) => void;
     onDelete: (workflowId: number) => void;
 }
 
-export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) => {
+const toaster = createToaster({
+    placement: 'top',
+});
+
+export const WorkflowCard = ({ workflow, onDelete }: WorkflowCardProps) => {
     const [copying, setCopying] = useState(false);
     const [formattedDates, setFormattedDates] = useState({ created: '', updated: '' });
-    const toast = useToast();
+    const navigate = useNavigate();
 
     // Format dates when workflow changes
     useEffect(() => {
@@ -46,24 +48,26 @@ export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) 
             setCopying(true);
             const fullUrl = `${window.location.origin}${workflow.webhook_url}`;
             await navigator.clipboard.writeText(fullUrl);
-            toast({
+            toaster.create({
                 title: 'Webhook URL copied',
                 description: 'The webhook URL has been copied to your clipboard.',
-                status: 'success',
+                type: 'success',
                 duration: 2000,
-                isClosable: true,
             });
         } catch (error) {
-            toast({
+            toaster.create({
                 title: 'Copy failed',
                 description: 'Failed to copy the webhook URL to clipboard.',
-                status: 'error',
+                type: 'error',
                 duration: 2000,
-                isClosable: true,
             });
         } finally {
             setCopying(false);
         }
+    };
+
+    const handleEdit = () => {
+        navigate(`/workflows/${workflow.id}/edit`);
     };
 
     return (
@@ -83,7 +87,7 @@ export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) 
                             {workflow.name}
                         </Heading>
                         <Badge
-                            colorScheme={workflow.is_active ? "green" : "gray"}
+                            colorPalette={workflow.is_active ? "green" : "gray"}
                             variant="subtle"
                         >
                             {workflow.is_active ? "Active" : "Inactive"}
@@ -101,9 +105,9 @@ export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) 
                         <Button
                             size="xs"
                             variant="ghost"
-                            colorScheme="blue"
+                            colorPalette="blue"
                             onClick={copyWebhookUrl}
-                            isLoading={copying}
+                            loading={copying}
                         >
                             Copy
                         </Button>
@@ -117,22 +121,24 @@ export const WorkflowCard = ({ workflow, onEdit, onDelete }: WorkflowCardProps) 
                     </Text>
                 </VStack>
 
-                <ButtonGroup size="sm" gap="2">
+                <HStack gap="2">
                     <Button
                         variant="outline"
-                        colorScheme="blue"
-                        onClick={() => onEdit(workflow)}
+                        colorPalette="blue"
+                        size="sm"
+                        onClick={handleEdit}
                     >
-                        View/Edit
+                        Edit
                     </Button>
                     <Button
                         variant="outline"
-                        colorScheme="red"
+                        colorPalette="red"
+                        size="sm"
                         onClick={() => onDelete(workflow.id)}
                     >
                         Delete
                     </Button>
-                </ButtonGroup>
+                </HStack>
             </HStack>
         </Box>
     );

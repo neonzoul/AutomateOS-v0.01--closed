@@ -49,7 +49,12 @@
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
 - [ ] 4. Workflow Editor Interface
-  - [ ] 4.1 Node Configuration Components
+  - [x] 4.1 Node Configuration Components
+
+
+
+
+
     - Create base Node component with common configuration interface
     - Build WebhookTrigger node component with URL display
     - Implement HTTPRequestNode component with method, URL, headers, and body fields
@@ -57,7 +62,10 @@
     - Add node validation and real-time feedback
     - _Requirements: 3.1, 3.2, 3.3, 5.1, 5.2_
 
-  - [ ] 4.2 Workflow Editor Core
+  - [-] 4.2 Workflow Editor Core
+
+
+
     - Build WorkflowEditor component managing workflow state as JSON
     - Implement node addition interface with type selection
     - Create node ordering and connection management

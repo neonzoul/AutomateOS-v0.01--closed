@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Heading,
@@ -9,18 +10,25 @@ import {
     VStack,
     Spinner,
     Center,
-    useDisclosure,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
-    useToast,
+    createToaster,
+} from '@chakra-ui/react';
+import {
+    DialogActionTrigger,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
+    DialogTrigger,
 } from '@chakra-ui/react';
 import { workflowService } from '../../services/api';
 import { WorkflowCard } from './WorkflowCard';
-import { CreateWorkflowModal } from './CreateWorkflowModal';
+
+const toaster = createToaster({
+    placement: 'top',
+});
 
 interface Workflow {
     id: number;
@@ -36,10 +44,8 @@ export const WorkflowList = () => {
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleteWorkflowId, setDeleteWorkflowId] = useState<number | null>(null);
-    const { open: isDeleteDialogOpen, onOpen: openDeleteDialog, onClose: closeDeleteDialog } = useDisclosure();
-    const { open: isCreateModalOpen, onOpen: openCreateModal, onClose: closeCreateModal } = useDisclosure();
-    const cancelRef = useRef<HTMLButtonElement>(null);
-    const toast = useToast();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const navigate = useNavigate();
 
     const fetchWorkflows = async () => {
         try {
@@ -47,12 +53,11 @@ export const WorkflowList = () => {
             const data = await workflowService.getWorkflows();
             setWorkflows(data);
         } catch (error) {
-            toast({
+            toaster.create({
                 title: 'Error fetching workflows',
                 description: 'Failed to load your workflows. Please try again.',
-                status: 'error',
+                type: 'error',
                 duration: 5000,
-                isClosable: true,
             });
         } finally {
             setLoading(false);
@@ -67,41 +72,32 @@ export const WorkflowList = () => {
         try {
             await workflowService.deleteWorkflow(deleteWorkflowId);
             setWorkflows(workflows.filter(w => w.id !== deleteWorkflowId));
-            toast({
+            toaster.create({
                 title: 'Workflow deleted',
                 description: 'The workflow has been successfully deleted.',
-                status: 'success',
+                type: 'success',
                 duration: 3000,
-                isClosable: true,
             });
         } catch (error) {
-            toast({
+            toaster.create({
                 title: 'Error deleting workflow',
                 description: 'Failed to delete the workflow. Please try again.',
-                status: 'error',
+                type: 'error',
                 duration: 5000,
-                isClosable: true,
             });
         } finally {
             setDeleteWorkflowId(null);
-            closeDeleteDialog();
+            setIsDeleteDialogOpen(false);
         }
     };
 
     const confirmDeleteWorkflow = (workflowId: number) => {
         setDeleteWorkflowId(workflowId);
-        openDeleteDialog();
+        setIsDeleteDialogOpen(true);
     };
 
-    const handleEditWorkflow = (workflow: Workflow) => {
-        // TODO: Navigate to workflow editor
-        toast({
-            title: 'Edit workflow',
-            description: `Editing ${workflow.name} - Editor coming soon!`,
-            status: 'info',
-            duration: 3000,
-            isClosable: true,
-        });
+    const handleCreateWorkflow = () => {
+        navigate('/workflows/new');
     };
 
     useEffect(() => {
@@ -128,15 +124,9 @@ export const WorkflowList = () => {
                 <Text color="gray.500" mb={6}>
                     Create your first workflow to get started with automation.
                 </Text>
-                <Button colorScheme="blue" size="lg" onClick={openCreateModal}>
+                <Button colorPalette="blue" size="lg" onClick={handleCreateWorkflow}>
                     Create Your First Workflow
                 </Button>
-
-                <CreateWorkflowModal
-                    isOpen={isCreateModalOpen}
-                    onClose={closeCreateModal}
-                    onWorkflowCreated={fetchWorkflows}
-                />
             </Box>
         );
     }
@@ -145,7 +135,7 @@ export const WorkflowList = () => {
         <Box>
             <HStack justify="space-between" mb={6}>
                 <Heading size="lg">Your Workflows</Heading>
-                <Button colorScheme="blue" onClick={openCreateModal}>
+                <Button colorPalette="blue" onClick={handleCreateWorkflow}>
                     Create New Workflow
                 </Button>
             </HStack>
@@ -155,46 +145,31 @@ export const WorkflowList = () => {
                     <WorkflowCard
                         key={workflow.id}
                         workflow={workflow}
-                        onEdit={handleEditWorkflow}
                         onDelete={confirmDeleteWorkflow}
                     />
                 ))}
             </Stack>
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog
-                isOpen={isDeleteDialogOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={closeDeleteDialog}
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                            Delete Workflow
-                        </AlertDialogHeader>
-
-                        <AlertDialogBody>
-                            Are you sure you want to delete this workflow? This action cannot be undone.
-                        </AlertDialogBody>
-
-                        <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={closeDeleteDialog}>
-                                Cancel
-                            </Button>
-                            <Button colorScheme="red" onClick={handleDeleteWorkflow} ml={3}>
-                                Delete
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
-
-            {/* Create Workflow Modal */}
-            <CreateWorkflowModal
-                isOpen={isCreateModalOpen}
-                onClose={closeCreateModal}
-                onWorkflowCreated={fetchWorkflows}
-            />
+            <DialogRoot open={isDeleteDialogOpen} onOpenChange={(e) => setIsDeleteDialogOpen(e.open)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Workflow</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                        Are you sure you want to delete this workflow? This action cannot be undone.
+                    </DialogBody>
+                    <DialogFooter>
+                        <DialogActionTrigger asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogActionTrigger>
+                        <Button colorPalette="red" onClick={handleDeleteWorkflow}>
+                            Delete
+                        </Button>
+                    </DialogFooter>
+                    <DialogCloseTrigger />
+                </DialogContent>
+            </DialogRoot>
         </Box>
     );
 };

@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Heading, HStack, Container, useToast } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Container, createToaster } from '@chakra-ui/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { WorkflowList } from './WorkflowList';
 import { workflowService } from '../../services/api';
 
+const toaster = createToaster({
+    placement: 'top',
+});
+
 export const Dashboard = () => {
     const { logout } = useAuth();
     const [loading, setLoading] = useState(false);
-    const toast = useToast();
 
     // Check API connection on mount
     useEffect(() => {
@@ -17,12 +20,11 @@ export const Dashboard = () => {
                 await workflowService.getWorkflows();
                 // Connection successful, no need to show a message
             } catch (error) {
-                toast({
+                toaster.create({
                     title: 'API Connection Error',
                     description: 'Could not connect to the backend API. Please ensure the server is running.',
-                    status: 'error',
+                    type: 'error',
                     duration: 5000,
-                    isClosable: true,
                 });
             } finally {
                 setLoading(false);
@@ -30,7 +32,7 @@ export const Dashboard = () => {
         };
 
         checkApiConnection();
-    }, [toast]);
+    }, []);
 
     return (
         <Box minHeight="100vh" bg="gray.50">
@@ -41,7 +43,7 @@ export const Dashboard = () => {
                         <Heading size="lg" color="blue.600">
                             AutomateOS
                         </Heading>
-                        <Button variant="ghost" colorScheme="red" onClick={logout}>
+                        <Button variant="ghost" colorPalette="red" onClick={logout}>
                             Log Out
                         </Button>
                     </HStack>
