@@ -59,6 +59,7 @@ Visit: **http://localhost:8000/docs** for interactive Swagger UI
   "password": "testpassword123"
 }
 ```
+
 **Expected**: 200 OK with user details
 
 #### Step 2: Login and Get Token
