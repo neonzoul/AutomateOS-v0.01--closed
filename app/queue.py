@@ -114,6 +114,8 @@ def execute_workflow_job(workflow_id: int, payload: Dict[str, Any]) -> Dict[str,
     Returns:
         Dict containing execution results
     """
+    from .workflow_engine import WorkflowEngine, WorkflowExecutionError
+    
     session = next(get_session())
     execution_log = None
     
@@ -137,15 +139,9 @@ def execute_workflow_job(workflow_id: int, payload: Dict[str, Any]) -> Dict[str,
         session.commit()
         session.refresh(execution_log)
         
-        # Execute workflow logic (placeholder for now)
-        # This will be implemented in task 5.2
-        result = {
-            "status": "success",
-            "message": f"Workflow {workflow.name} executed successfully",
-            "workflow_id": workflow_id,
-            "execution_id": execution_log.id,
-            "payload": payload
-        }
+        # Execute workflow using the workflow engine
+        engine = WorkflowEngine()
+        result = engine.execute_workflow(workflow, payload)
         
         # Update execution log with success
         execution_log.status = "success"
@@ -155,6 +151,22 @@ def execute_workflow_job(workflow_id: int, payload: Dict[str, Any]) -> Dict[str,
         session.commit()
         
         return result
+        
+    except WorkflowExecutionError as e:
+        error_message = e.message
+        error_details = e.details
+        
+        # Update execution log with failure
+        if execution_log:
+            execution_log.status = "failed"
+            execution_log.error_message = error_message
+            execution_log.result = error_details
+            execution_log.completed_at = datetime.utcnow()
+            session.add(execution_log)
+            session.commit()
+        
+        # Re-raise the exception so RQ marks the job as failed
+        raise e
         
     except Exception as e:
         error_message = str(e)
