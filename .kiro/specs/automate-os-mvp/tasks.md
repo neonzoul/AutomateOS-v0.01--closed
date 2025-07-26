@@ -50,11 +50,6 @@
 
 - [ ] 4. Workflow Editor Interface
   - [x] 4.1 Node Configuration Components
-
-
-
-
-
     - Create base Node component with common configuration interface
     - Build WebhookTrigger node component with URL display
     - Implement HTTPRequestNode component with method, URL, headers, and body fields
@@ -63,11 +58,6 @@
     - _Requirements: 3.1, 3.2, 3.3, 5.1, 5.2_
 
   - [x] 4.2 Workflow Editor Core
-
-
-
-
-
     - Build WorkflowEditor component managing workflow state as JSON
     - Implement node addition interface with type selection
     - Create node ordering and connection management
@@ -77,7 +67,12 @@
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
 - [ ] 5. Asynchronous Execution Engine
-  - [ ] 5.1 Task Queue Infrastructure
+  - [x] 5.1 Task Queue Infrastructure
+
+
+
+
+
     - Set up Redis connection and RQ queue configuration
     - Create workflow execution job function with error handling
     - Implement background worker script for processing jobs

@@ -1,14 +1,15 @@
 # AutomateOS main application file
 from contextlib import asynccontextmanager
 from datetime import timedelta
-from typing import List
-from fastapi import FastAPI, Depends, HTTPException
+from typing import List, Dict, Any
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
 from . import crud, schemas, security, models
 from .database import create_db_and_tables, get_session
+from .queue import enqueue_workflow_execution, get_job_status, get_queue_info
 
 @asynccontextmanager
 # Use lifespan context manager for database initialization
@@ -199,3 +200,77 @@ def delete_workflow(
     if not success:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return {"message": "Workflow deleted successfully"}
+
+@app.post("/webhook/{webhook_id}")
+async def trigger_workflow_webhook(
+    webhook_id: str,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    """
+    Webhook endpoint to trigger workflow execution.
+    
+    This endpoint receives HTTP requests from external services and enqueues
+    the corresponding workflow for asynchronous execution.
+    
+    Args:
+        webhook_id: Unique webhook identifier from the URL
+        request: HTTP request containing the payload
+        
+    Returns:
+        Dict with job ID and status information
+    """
+    # Get request payload
+    try:
+        payload = await request.json()
+    except:
+        payload = {}
+    
+    # Add request metadata to payload
+    from datetime import datetime
+    payload.update({
+        "method": request.method,
+        "headers": dict(request.headers),
+        "url": str(request.url),
+        "timestamp": datetime.utcnow().isoformat()
+    })
+    
+    # Find workflow by webhook URL
+    workflow = crud.get_workflow_by_webhook_id(session=session, webhook_id=webhook_id)
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Webhook not found")
+    
+    if not workflow.is_active:
+        raise HTTPException(status_code=400, detail="Workflow is not active")
+    
+    # Enqueue workflow execution
+    job_id = enqueue_workflow_execution(workflow.id, payload)
+    
+    return {
+        "message": "Workflow execution enqueued",
+        "job_id": job_id,
+        "workflow_id": workflow.id,
+        "status": "accepted"
+    }
+
+@app.get("/jobs/{job_id}/status")
+def get_job_status_endpoint(job_id: str):
+    """
+    Get the status of a queued workflow execution job.
+    
+    Args:
+        job_id: ID of the job to check
+        
+    Returns:
+        Dict containing job status and execution information
+    """
+    return get_job_status(job_id)
+
+@app.get("/queue/info")
+def get_queue_info_endpoint():
+    """
+    Get information about the workflow execution queue.
+    
+    Returns queue statistics including job counts and status.
+    """
+    return get_queue_info()

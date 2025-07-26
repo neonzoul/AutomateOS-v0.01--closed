@@ -105,3 +105,10 @@ def delete_workflow(session: Session, workflow_id: int, owner_id: int) -> bool:
     session.delete(db_workflow)
     session.commit()
     return True
+
+def get_workflow_by_webhook_id(session: Session, webhook_id: str) -> models.Workflow | None:
+    """Retrieve a workflow by its webhook ID."""
+    webhook_url = f"/webhook/{webhook_id}"
+    return session.exec(
+        select(models.Workflow).where(models.Workflow.webhook_url == webhook_url)
+    ).first()
