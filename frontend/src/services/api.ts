@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8002',
+    baseURL: 'http://127.0.0.1:8000',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -46,7 +46,7 @@ export const authService = {
         params.append('password', password);
 
         const response = await axios.post('/auth/token', params, {
-            baseURL: 'http://127.0.0.1:8002',
+            baseURL: 'http://127.0.0.1:8000',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -59,7 +59,7 @@ export const authService = {
             email,
             password
         }, {
-            baseURL: 'http://127.0.0.1:8002',
+            baseURL: 'http://127.0.0.1:8000',
         });
         return response.data;
     },
@@ -96,8 +96,32 @@ export const workflowService = {
         return response.data;
     },
 
-    getWorkflowLogs: async (id: number) => {
-        const response = await api.get(`/workflows/${id}/logs`);
+    getWorkflowLogs: async (id: number, params?: {
+        status?: string;
+        limit?: number;
+        offset?: number;
+    }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.status) queryParams.append('status', params.status);
+        if (params?.limit) queryParams.append('limit', params.limit.toString());
+        if (params?.offset) queryParams.append('offset', params.offset.toString());
+
+        const url = `/workflows/${id}/logs${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+        const response = await api.get(url);
+        return response.data;
+    },
+
+    getWorkflowLogsCount: async (id: number, status?: string) => {
+        const queryParams = new URLSearchParams();
+        if (status) queryParams.append('status', status);
+
+        const url = `/workflows/${id}/logs/count${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+        const response = await api.get(url);
+        return response.data;
+    },
+
+    getExecutionLogDetail: async (logId: number) => {
+        const response = await api.get(`/logs/${logId}`);
         return response.data;
     },
 };

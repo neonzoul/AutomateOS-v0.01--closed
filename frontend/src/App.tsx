@@ -4,6 +4,7 @@ import { LoginPage } from './components/auth/LoginPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { WorkflowEditor } from './components/editor/WorkflowEditor';
+import { WorkflowLogsPage } from './components/dashboard/WorkflowLogsPage';
 import NodeDemo from './components/editor/NodeDemo';
 import NodeTest from './components/editor/NodeTest';
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/workflows/new" element={<WorkflowEditor />} />
             <Route path="/workflows/:id/edit" element={<WorkflowEditor />} />
+            <Route path="/workflows/:id/logs" element={<WorkflowLogsPage />} />
             <Route path="/node-demo" element={<NodeDemo />} />
             {/* Add other protected routes here later */}
           </Route>

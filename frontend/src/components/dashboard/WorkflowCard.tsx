@@ -132,6 +132,14 @@ export const WorkflowCard = ({ workflow, onDelete }: WorkflowCardProps) => {
                     </Button>
                     <Button
                         variant="outline"
+                        colorPalette="gray"
+                        size="sm"
+                        onClick={() => navigate(`/workflows/${workflow.id}/logs`)}
+                    >
+                        Logs
+                    </Button>
+                    <Button
+                        variant="outline"
                         colorPalette="red"
                         size="sm"
                         onClick={() => onDelete(workflow.id)}
