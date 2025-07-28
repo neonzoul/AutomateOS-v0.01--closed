@@ -1,4 +1,5 @@
-# AutomateOS main application file
+# AutomateOS main application file (No Redis version)
+import os
 from contextlib import asynccontextmanager
 from datetime import timedelta
 from typing import List, Dict, Any
@@ -9,16 +10,34 @@ from sqlmodel import Session, select
 
 from . import crud, schemas, security, models
 from .database import create_db_and_tables, get_session
-from .queue import enqueue_workflow_execution, get_job_status, get_queue_info
+
+# Check if we should use mock queue
+USE_MOCK_QUEUE = os.getenv("USE_MOCK_QUEUE", "true").lower() == "true"
+
+if USE_MOCK_QUEUE:
+    from .mock_queue import (
+        enqueue_workflow_execution_mock as enqueue_workflow_execution,
+        get_job_status_mock as get_job_status,
+        get_queue_info_mock as get_queue_info
+    )
+    print("Using mock queue system")
+else:
+    try:
+        from .queue import enqueue_workflow_execution, get_job_status, get_queue_info
+        print("Using Redis queue system")
+    except Exception as e:
+        print(f"Redis queue failed, falling back to mock queue: {e}")
+        from .mock_queue import (
+            enqueue_workflow_execution_mock as enqueue_workflow_execution,
+            get_job_status_mock as get_job_status,
+            get_queue_info_mock as get_queue_info
+        )
 
 @asynccontextmanager
-# Use lifespan context manager for database initialization
 async def lifespan(app: FastAPI):
-    # Code to run on startup
     print("INFO:     Creating database and tables...")
     create_db_and_tables()
     yield
-    # Code to run on shutdown (if any)
     print("INFO:     Application shutdown.")
 
 app = FastAPI(
@@ -29,20 +48,11 @@ app = FastAPI(
 )
 
 # CORS Configuration
-# Cross-Origin Resource Sharing (CORS) allows web applications running at one origin
-# (domain, protocol, or port) to access resources from a different origin.
-# This is essential for our architecture where the React frontend and FastAPI backend
-# run on different ports during development.
 origins = [
-    "http://localhost:5173",  # The default port for Vite React dev server
-    "http://localhost:3000",  # A common alternative for React dev servers
+    "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
-# Add the CORS middleware to the FastAPI application
-# - allow_origins: List of allowed origins (frontend URLs)
-# - allow_credentials: Allow cookies and authentication headers
-# - allow_methods: Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-# - allow_headers: Allow all request headers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -53,15 +63,7 @@ app.add_middleware(
 
 @app.post("/register/", response_model=schemas.UserPublic)
 def register_user(user: schemas.UserCreate, session: Session = Depends(get_session)):
-    """
-    Register a new user with email and password.
-    
-    - **email**: User's email address (must be unique)
-    - **password**: User's password (will be securely hashed)
-    
-    Returns the newly created user's public information.
-    """
-    # Check if user already exists
+    """Register a new user with email and password."""
     db_user = crud.get_user_by_email(session=session, email=user.email)
     if db_user:
         raise HTTPException(
@@ -69,7 +71,6 @@ def register_user(user: schemas.UserCreate, session: Session = Depends(get_sessi
             detail="Email already registered"
         )
     
-    # Create new user
     new_user = crud.create_user(session=session, user=user)
     return new_user
 
@@ -78,16 +79,7 @@ def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), 
     session: Session = Depends(get_session)
 ):
-    """
-    Authenticate user and return a JWT access token.
-    
-    - **username**: User's email address (OAuth2 standard uses 'username' field)
-    - **password**: User's password
-    
-    Returns a JWT access token that can be used for authenticated requests.
-    The token expires after the configured time period (default: 30 minutes).
-    """
-    # Authenticate user using email (username field) and password
+    """Authenticate user and return a JWT access token."""
     user = crud.authenticate_user(
         session=session, 
         user_credentials=schemas.UserCreate(
@@ -103,7 +95,6 @@ def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Create access token with user's email as subject
     access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         data={"sub": user.email}, 
@@ -114,19 +105,19 @@ def login_for_access_token(
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to AutomateOS API"}
+    queue_type = "Mock Queue (No Redis)" if USE_MOCK_QUEUE else "Redis Queue"
+    return {
+        "message": "Welcome to AutomateOS API",
+        "queue_system": queue_type,
+        "status": "ready"
+    }
 
 @app.get("/workflows/", response_model=List[schemas.WorkflowPublic])
 def read_user_workflows(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Retrieve all workflows for the current authenticated user.
-    
-    Returns a list of workflows owned by the authenticated user.
-    Requires valid JWT token in Authorization header.
-    """
+    """Retrieve all workflows for the current authenticated user."""
     return crud.get_workflows_by_owner(session=session, owner_id=current_user.id)
 
 @app.post("/workflows/", response_model=schemas.WorkflowPublic)
@@ -135,16 +126,7 @@ def create_workflow(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Create a new workflow for the current authenticated user.
-    
-    - **name**: Workflow name
-    - **description**: Optional workflow description  
-    - **definition**: Workflow configuration as JSON
-    - **is_active**: Whether the workflow is active (default: true)
-    
-    Returns the created workflow with generated webhook URL.
-    """
+    """Create a new workflow for the current authenticated user."""
     return crud.create_workflow(session=session, workflow=workflow, owner_id=current_user.id)
 
 @app.get("/workflows/{workflow_id}", response_model=schemas.WorkflowPublic)
@@ -153,11 +135,7 @@ def read_workflow(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Retrieve a specific workflow by ID.
-    
-    Returns the workflow if it exists and belongs to the authenticated user.
-    """
+    """Retrieve a specific workflow by ID."""
     workflow = crud.get_workflow_by_id(session=session, workflow_id=workflow_id, owner_id=current_user.id)
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
@@ -170,11 +148,7 @@ def update_workflow(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Update an existing workflow.
-    
-    Updates the workflow if it exists and belongs to the authenticated user.
-    """
+    """Update an existing workflow."""
     workflow = crud.update_workflow(
         session=session, 
         workflow_id=workflow_id, 
@@ -191,11 +165,7 @@ def delete_workflow(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Delete a workflow by ID.
-    
-    Deletes the workflow if it exists and belongs to the authenticated user.
-    """
+    """Delete a workflow by ID."""
     success = crud.delete_workflow(session=session, workflow_id=workflow_id, owner_id=current_user.id)
     if not success:
         raise HTTPException(status_code=404, detail="Workflow not found")
@@ -207,26 +177,12 @@ async def trigger_workflow_webhook(
     request: Request,
     session: Session = Depends(get_session)
 ):
-    """
-    Webhook endpoint to trigger workflow execution.
-    
-    This endpoint receives HTTP requests from external services and enqueues
-    the corresponding workflow for asynchronous execution.
-    
-    Args:
-        webhook_id: Unique webhook identifier from the URL
-        request: HTTP request containing the payload
-        
-    Returns:
-        Dict with job ID and status information
-    """
-    # Get request payload
+    """Webhook endpoint to trigger workflow execution."""
     try:
         payload = await request.json()
     except:
         payload = {}
     
-    # Add request metadata to payload
     from datetime import datetime
     payload.update({
         "method": request.method,
@@ -235,7 +191,6 @@ async def trigger_workflow_webhook(
         "timestamp": datetime.utcnow().isoformat()
     })
     
-    # Find workflow by webhook URL
     workflow = crud.get_workflow_by_webhook_id(session=session, webhook_id=webhook_id)
     if not workflow:
         raise HTTPException(status_code=404, detail="Webhook not found")
@@ -243,37 +198,27 @@ async def trigger_workflow_webhook(
     if not workflow.is_active:
         raise HTTPException(status_code=400, detail="Workflow is not active")
     
-    # Enqueue workflow execution
     job_id = enqueue_workflow_execution(workflow.id, payload)
     
     return {
         "message": "Workflow execution enqueued",
         "job_id": job_id,
         "workflow_id": workflow.id,
-        "status": "accepted"
+        "status": "accepted",
+        "queue_type": "mock" if USE_MOCK_QUEUE else "redis"
     }
 
 @app.get("/jobs/{job_id}/status")
 def get_job_status_endpoint(job_id: str):
-    """
-    Get the status of a queued workflow execution job.
-    
-    Args:
-        job_id: ID of the job to check
-        
-    Returns:
-        Dict containing job status and execution information
-    """
+    """Get the status of a queued workflow execution job."""
     return get_job_status(job_id)
 
 @app.get("/queue/info")
 def get_queue_info_endpoint():
-    """
-    Get information about the workflow execution queue.
-    
-    Returns queue statistics including job counts and status.
-    """
-    return get_queue_info()
+    """Get information about the workflow execution queue."""
+    info = get_queue_info()
+    info["type"] = "mock" if USE_MOCK_QUEUE else "redis"
+    return info
 
 @app.get("/workflows/{workflow_id}/logs", response_model=List[schemas.ExecutionLogSummary])
 def get_workflow_execution_logs(
@@ -284,18 +229,7 @@ def get_workflow_execution_logs(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Retrieve execution logs for a specific workflow.
-    
-    Args:
-        workflow_id: ID of the workflow
-        status: Optional status filter ("success", "failed", "running")
-        limit: Maximum number of logs to return (default: 50, max: 100)
-        offset: Number of logs to skip for pagination (default: 0)
-        
-    Returns:
-        List of execution log summaries ordered by most recent first
-    """
+    """Retrieve execution logs for a specific workflow."""
     # Validate parameters
     if limit > 100:
         limit = 100
@@ -341,15 +275,7 @@ def get_execution_log_detail(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Retrieve detailed information for a specific execution log.
-    
-    Args:
-        log_id: ID of the execution log
-        
-    Returns:
-        Complete execution log with payload, result, and error details
-    """
+    """Retrieve detailed information for a specific execution log."""
     log = crud.get_execution_log_by_id(
         session=session,
         log_id=log_id,
@@ -368,16 +294,7 @@ def get_workflow_logs_count(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Get the total count of execution logs for a workflow.
-    
-    Args:
-        workflow_id: ID of the workflow
-        status: Optional status filter ("success", "failed", "running")
-        
-    Returns:
-        Dict containing the total count of logs
-    """
+    """Get the total count of execution logs for a workflow."""
     # Validate status filter
     valid_statuses = ["success", "failed", "running"]
     if status and status not in valid_statuses:
@@ -401,18 +318,7 @@ def cleanup_old_logs(
     session: Session = Depends(get_session),
     current_user: models.User = Depends(security.get_current_user)
 ):
-    """
-    Clean up execution logs older than the specified number of days.
-    
-    This endpoint is available to all authenticated users but only affects
-    logs from workflows they own (through the database relationships).
-    
-    Args:
-        days_to_keep: Number of days to keep logs (default: 30, min: 1, max: 365)
-        
-    Returns:
-        Dict containing the number of logs deleted
-    """
+    """Clean up execution logs older than the specified number of days."""
     # Validate days_to_keep parameter
     if days_to_keep < 1:
         days_to_keep = 1
@@ -429,6 +335,7 @@ def cleanup_old_logs(
     
     # Clean up logs for user's workflows only
     from datetime import datetime, timedelta
+    from sqlmodel import select
     cutoff_date = datetime.utcnow() - timedelta(days=days_to_keep)
     
     logs_to_delete = session.exec(

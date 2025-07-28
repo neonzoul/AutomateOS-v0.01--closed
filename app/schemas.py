@@ -36,3 +36,23 @@ class WorkflowPublic(SQLModel):
     owner_id: int
     created_at: datetime
     updated_at: datetime
+
+# Schema for reading execution log data (output)
+class ExecutionLogPublic(SQLModel):
+    id: int
+    workflow_id: int
+    status: str
+    payload: dict
+    result: Optional[dict]
+    error_message: Optional[str]
+    started_at: datetime
+    completed_at: Optional[datetime]
+
+# Schema for execution log summary (for list views)
+class ExecutionLogSummary(SQLModel):
+    id: int
+    workflow_id: int
+    status: str
+    started_at: datetime
+    completed_at: Optional[datetime]
+    error_message: Optional[str]
