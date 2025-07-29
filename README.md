@@ -78,7 +78,6 @@ graph TB
 ### Frontend
 - **React 18** - Component-based UI with modern hooks and context
 - **Vite** - Fast development server and optimized production builds
-- **Chakra UI** - Comprehensive component library for rapid UI development
 - **Axios** - HTTP client for API communication with auth interceptors
 
 ### Infrastructure
