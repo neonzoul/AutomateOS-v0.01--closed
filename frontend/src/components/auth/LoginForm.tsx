@@ -6,10 +6,14 @@ import {
     Input,
     VStack,
     Heading,
-    useToast,
+    createToaster,
     Text,
-    Tooltip,
     Icon
+} from '@chakra-ui/react';
+import {
+    TooltipContent,
+    TooltipRoot,
+    TooltipTrigger,
 } from '@chakra-ui/react';
 import { InfoIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
@@ -22,7 +26,9 @@ export const LoginForm = () => {
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
-    const toast = useToast();
+    const toaster = createToaster({
+        placement: 'top',
+    });
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -34,11 +40,10 @@ export const LoginForm = () => {
             const accessToken = response.access_token;
             login(accessToken);
 
-            toast({
+            toaster.create({
                 title: 'Login Successful.',
-                status: 'success',
+                type: 'success',
                 duration: 3000,
-                isClosable: true,
             });
 
             // Navigate to dashboard after successful login
@@ -56,12 +61,11 @@ export const LoginForm = () => {
 
             setError(errorMessage);
 
-            toast({
+            toaster.create({
                 title: 'Login Failed',
                 description: errorMessage,
-                status: 'error',
+                type: 'error',
                 duration: 5000,
-                isClosable: true,
             });
         } finally {
             setLoading(false);
@@ -89,12 +93,14 @@ export const LoginForm = () => {
                     <Box width="full">
                         <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
                             Email address *
-                            <Tooltip
-                                label="Enter the email address you used to register your account"
-                                placement="top"
-                            >
-                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
-                            </Tooltip>
+                            <TooltipRoot>
+                                <TooltipTrigger asChild>
+                                    <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Enter the email address you used to register your account
+                                </TooltipContent>
+                            </TooltipRoot>
                         </Box>
                         <Input
                             type="email"
@@ -109,12 +115,14 @@ export const LoginForm = () => {
                     <Box width="full">
                         <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
                             Password *
-                            <Tooltip
-                                label="Enter your account password"
-                                placement="top"
-                            >
-                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
-                            </Tooltip>
+                            <TooltipRoot>
+                                <TooltipTrigger asChild>
+                                    <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Enter your account password
+                                </TooltipContent>
+                            </TooltipRoot>
                         </Box>
                         <Input
                             type="password"

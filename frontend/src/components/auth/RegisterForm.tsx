@@ -6,13 +6,20 @@ import {
     Input,
     VStack,
     Heading,
-    useToast,
+    createToaster,
     Text,
-    Tooltip,
-    Icon,
-    Alert,
-    AlertIcon
+    Icon
 } from '@chakra-ui/react';
+import {
+    TooltipContent,
+    TooltipRoot,
+    TooltipTrigger,
+} from '@chakra-ui/react';
+import {
+    AlertRoot,
+    AlertDescription,
+} from '@chakra-ui/react';
+import { LuInfo } from 'react-icons/lu';
 import { InfoIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services/api';
@@ -25,7 +32,9 @@ export const RegisterForm = () => {
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
-    const toast = useToast();
+    const toaster = createToaster({
+        placement: 'top',
+    });
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -47,12 +56,11 @@ export const RegisterForm = () => {
             const accessToken = loginResponse.access_token;
             login(accessToken);
 
-            toast({
+            toaster.create({
                 title: 'Registration Successful.',
                 description: 'Welcome to AutomateOS!',
-                status: 'success',
+                type: 'success',
                 duration: 3000,
-                isClosable: true,
             });
 
             // Navigate to dashboard after successful registration
@@ -70,12 +78,11 @@ export const RegisterForm = () => {
 
             setError(errorMessage);
 
-            toast({
+            toaster.create({
                 title: 'Registration Failed',
                 description: errorMessage,
-                status: 'error',
+                type: 'error',
                 duration: 5000,
-                isClosable: true,
             });
         } finally {
             setLoading(false);
@@ -100,22 +107,24 @@ export const RegisterForm = () => {
                         </Box>
                     )}
 
-                    <Alert status="info" borderRadius="md">
-                        <AlertIcon />
-                        <Text fontSize="sm">
+                    <AlertRoot status="info" borderRadius="md">
+                        <Icon as={LuInfo} color="blue.500" />
+                        <AlertDescription fontSize="sm">
                             Create your AutomateOS account to start building workflow automations.
-                        </Text>
-                    </Alert>
+                        </AlertDescription>
+                    </AlertRoot>
 
                     <Box width="full">
                         <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
                             Email address *
-                            <Tooltip
-                                label="This will be your login username. Choose a valid email address you have access to."
-                                placement="top"
-                            >
-                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
-                            </Tooltip>
+                            <TooltipRoot>
+                                <TooltipTrigger asChild>
+                                    <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    This will be your login username. Choose a valid email address you have access to.
+                                </TooltipContent>
+                            </TooltipRoot>
                         </Box>
                         <Input
                             type="email"
@@ -133,12 +142,14 @@ export const RegisterForm = () => {
                     <Box width="full">
                         <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
                             Password *
-                            <Tooltip
-                                label="Choose a strong password with at least 8 characters for better security"
-                                placement="top"
-                            >
-                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
-                            </Tooltip>
+                            <TooltipRoot>
+                                <TooltipTrigger asChild>
+                                    <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Choose a strong password with at least 8 characters for better security
+                                </TooltipContent>
+                            </TooltipRoot>
                         </Box>
                         <Input
                             type="password"
@@ -157,12 +168,14 @@ export const RegisterForm = () => {
                     <Box width="full">
                         <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
                             Confirm Password *
-                            <Tooltip
-                                label="Re-enter your password to make sure it's correct"
-                                placement="top"
-                            >
-                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
-                            </Tooltip>
+                            <TooltipRoot>
+                                <TooltipTrigger asChild>
+                                    <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Re-enter your password to make sure it's correct
+                                </TooltipContent>
+                            </TooltipRoot>
                         </Box>
                         <Input
                             type="password"

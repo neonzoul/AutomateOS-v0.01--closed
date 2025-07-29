@@ -12,10 +12,17 @@ import {
     NativeSelectField,
     createToaster,
     Spinner,
-    Tooltip,
     Icon,
-    Alert,
-    AlertIcon,
+} from '@chakra-ui/react';
+import {
+    TooltipContent,
+    TooltipRoot,
+    TooltipTrigger,
+} from '@chakra-ui/react';
+import {
+    AlertRoot,
+    AlertTitle,
+    AlertDescription,
 } from '@chakra-ui/react';
 import { LuPlus, LuSave, LuPlay, LuArrowLeft, LuArrowUp, LuArrowDown, LuHistory, LuSettings, LuInfo } from 'react-icons/lu';
 import { Layout } from '../common/Layout';
@@ -381,7 +388,7 @@ export const WorkflowEditor: React.FC = () => {
                             <Text
                                 fontSize={{ base: "lg", md: "2xl" }}
                                 fontWeight="bold"
-                                noOfLines={1}
+                                lineClamp={1}
                                 minW="0"
                             >
                                 {isEditing ? workflow.name || 'Edit Workflow' : 'Create Workflow'}
@@ -447,24 +454,28 @@ export const WorkflowEditor: React.FC = () => {
                             <VStack align="stretch" gap={3}>
                                 <HStack align="center" gap={2}>
                                     <Text fontSize="lg" fontWeight="medium">Workflow Information</Text>
-                                    <Tooltip
-                                        label="Configure basic workflow settings including name, description, and activation status"
-                                        placement="top"
-                                    >
-                                        <Icon as={LuInfo} color="gray.400" boxSize={4} />
-                                    </Tooltip>
+                                    <TooltipRoot>
+                                        <TooltipTrigger asChild>
+                                            <Icon as={LuInfo} color="gray.400" boxSize={4} />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            Configure basic workflow settings including name, description, and activation status
+                                        </TooltipContent>
+                                    </TooltipRoot>
                                 </HStack>
 
                                 <VStack align="stretch" gap={3}>
                                     <Box>
                                         <HStack align="center" gap={2} mb={1}>
                                             <Text fontSize="sm" fontWeight="medium">Name *</Text>
-                                            <Tooltip
-                                                label="Choose a descriptive name that helps you identify this workflow's purpose"
-                                                placement="top"
-                                            >
-                                                <Icon as={LuInfo} color="gray.400" boxSize={3} />
-                                            </Tooltip>
+                                            <TooltipRoot>
+                                                <TooltipTrigger asChild>
+                                                    <Icon as={LuInfo} color="gray.400" boxSize={3} />
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    Choose a descriptive name that helps you identify this workflow's purpose
+                                                </TooltipContent>
+                                            </TooltipRoot>
                                         </HStack>
                                         <Input
                                             placeholder="e.g., Send Welcome Email, Process Order"
@@ -476,12 +487,14 @@ export const WorkflowEditor: React.FC = () => {
                                     <Box>
                                         <HStack align="center" gap={2} mb={1}>
                                             <Text fontSize="sm" fontWeight="medium">Status</Text>
-                                            <Tooltip
-                                                label="Active workflows can be triggered via webhook. Inactive workflows are disabled."
-                                                placement="top"
-                                            >
-                                                <Icon as={LuInfo} color="gray.400" boxSize={3} />
-                                            </Tooltip>
+                                            <TooltipRoot>
+                                                <TooltipTrigger asChild>
+                                                    <Icon as={LuInfo} color="gray.400" boxSize={3} />
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    Active workflows can be triggered via webhook. Inactive workflows are disabled.
+                                                </TooltipContent>
+                                            </TooltipRoot>
                                         </HStack>
                                         <NativeSelectRoot>
                                             <NativeSelectField
@@ -502,12 +515,14 @@ export const WorkflowEditor: React.FC = () => {
                                 <Box>
                                     <HStack align="center" gap={2} mb={1}>
                                         <Text fontSize="sm" fontWeight="medium">Description</Text>
-                                        <Tooltip
-                                            label="Optional description to document what this workflow does and when it should be used"
-                                            placement="top"
-                                        >
-                                            <Icon as={LuInfo} color="gray.400" boxSize={3} />
-                                        </Tooltip>
+                                        <TooltipRoot>
+                                            <TooltipTrigger asChild>
+                                                <Icon as={LuInfo} color="gray.400" boxSize={3} />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                Optional description to document what this workflow does and when it should be used
+                                            </TooltipContent>
+                                        </TooltipRoot>
                                     </HStack>
                                     <Textarea
                                         placeholder="e.g., Automatically sends a welcome email when a new user registers via webhook"
@@ -524,57 +539,60 @@ export const WorkflowEditor: React.FC = () => {
                         <Box borderWidth="1px" borderRadius="md" p={4}>
                             <HStack align="center" gap={2} mb={3}>
                                 <Text fontSize="lg" fontWeight="medium">Add Node</Text>
-                                <Tooltip
-                                    label="Nodes are the building blocks of your workflow. Add them in the order you want them to execute."
-                                    placement="top"
-                                >
-                                    <Icon as={LuInfo} color="gray.400" boxSize={4} />
-                                </Tooltip>
+                                <TooltipRoot>
+                                    <TooltipTrigger asChild>
+                                        <Icon as={LuInfo} color="gray.400" boxSize={4} />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Nodes are the building blocks of your workflow. Add them in the order you want them to execute.
+                                    </TooltipContent>
+                                </TooltipRoot>
                             </HStack>
 
                             <VStack align="stretch" gap={3}>
                                 <HStack wrap="wrap" gap={2}>
                                     {NODE_TYPES.map((nodeType) => (
-                                        <Tooltip
-                                            key={nodeType.value}
-                                            label={nodeType.description}
-                                            placement="top"
-                                        >
-                                            <Button
-                                                onClick={() => addNode(nodeType.value as NodeConfig['type'])}
-                                                variant="outline"
-                                                size="sm"
-                                            >
-                                                <LuPlus />
-                                                {nodeType.label}
-                                            </Button>
-                                        </Tooltip>
+                                        <TooltipRoot key={nodeType.value}>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    onClick={() => addNode(nodeType.value as NodeConfig['type'])}
+                                                    variant="outline"
+                                                    size="sm"
+                                                >
+                                                    <LuPlus />
+                                                    {nodeType.label}
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                {nodeType.description}
+                                            </TooltipContent>
+                                        </TooltipRoot>
                                     ))}
                                 </HStack>
 
                                 {workflow.definition.nodes.length === 0 && (
-                                    <Alert status="info" borderRadius="md">
-                                        <AlertIcon />
+                                    <AlertRoot status="info" borderRadius="md">
+                                        <Icon as={LuInfo} color="blue.500" />
                                         <VStack align="start" gap={1}>
-                                            <Text fontSize="sm" fontWeight="medium">
+                                            <AlertTitle fontSize="sm">
                                                 Getting Started
-                                            </Text>
-                                            <Text fontSize="sm">
+                                            </AlertTitle>
+                                            <AlertDescription fontSize="sm">
                                                 1. Start by adding a <strong>Webhook Trigger</strong> to define how your workflow will be triggered<br />
                                                 2. Add <strong>HTTP Request</strong> nodes to call external APIs<br />
                                                 3. Use <strong>Filter</strong> nodes to add conditional logic
-                                            </Text>
+                                            </AlertDescription>
                                         </VStack>
-                                    </Alert>
+                                    </AlertRoot>
                                 )}
 
                                 {workflow.definition.nodes.length > 0 && workflow.definition.nodes[0].type !== 'webhook' && (
-                                    <Alert status="warning" borderRadius="md">
-                                        <AlertIcon />
-                                        <Text fontSize="sm">
+                                    <AlertRoot status="warning" borderRadius="md">
+                                        <Icon as={LuInfo} color="orange.500" />
+                                        <AlertDescription fontSize="sm">
                                             <strong>Important:</strong> The first node should be a Webhook Trigger to define how your workflow starts.
-                                        </Text>
-                                    </Alert>
+                                        </AlertDescription>
+                                    </AlertRoot>
                                 )}
                             </VStack>
                         </Box>
