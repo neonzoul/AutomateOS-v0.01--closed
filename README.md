@@ -88,62 +88,67 @@ graph TB
 
 ## 🚦 Getting Started
 
+### Quick Setup (Recommended)
+
+Use our automated setup script for the fastest way to get started:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/automate-os-mvp.git
+cd automate-os-mvp
+
+# Run the setup script
+python setup.py development
+```
+
+The setup script will:
+- Check prerequisites (Python 3.9+, Node.js 18+, Redis)
+- Create virtual environment and install dependencies
+- Generate secure environment configuration
+- Initialize the database
+- Set up the frontend
+
+### Manual Setup
+
+If you prefer manual setup, see the [Deployment Guide](DEPLOYMENT_GUIDE.md) for detailed instructions.
+
 ### Prerequisites
 - Python 3.9+
-- Node.js 16+
-- PostgreSQL (or SQLite for development)
-- Redis
+- Node.js 18+
+- Redis 6.0+
+- PostgreSQL 12+ (production) or SQLite (development)
 
-### Local Development Setup
+### Starting the Application
 
-1. **Clone the repository**
+After setup, start the services:
+
+1. **Start Redis** (if not already running)
+2. **Start the backend server**:
    ```bash
-   git clone https://github.com/yourusername/automate-os-mvp.git
-   cd automate-os-mvp
-   ```
-
-2. **Backend Setup**
-   ```bash
-   # Create virtual environment
-   python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   
-   # Install dependencies
-   pip install -r requirements.txt
-   
-   # Set environment variables
-   cp .env.example .env
-   # Edit .env with your database and Redis URLs
-   
-   # Run database migrations
-   alembic upgrade head
-   
-   # Start the API server
-   uvicorn main:app --reload
+   python start_server.py
    ```
-
-3. **Frontend Setup**
+3. **Start the background worker** (new terminal):
    ```bash
-   # Navigate to frontend directory
+   source venv/bin/activate
+   python start_worker.py
+   ```
+4. **Start the frontend** (new terminal):
+   ```bash
    cd frontend
-   
-   # Install dependencies
-   npm install
-   
-   # Start development server
    npm run dev
    ```
 
-4. **Start Background Worker**
-   ```bash
-   # In a new terminal, activate venv and run:
-   python worker.py
-   ```
-
 The application will be available at:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+
+## 📚 Documentation
+
+- **[User Guide](USER_GUIDE.md)** - Complete guide to creating and managing workflows
+- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Detailed setup and deployment instructions
+- **[API Documentation](http://localhost:8000/docs)** - Interactive API documentation (when server is running)
 
 ## 📖 API Documentation
 

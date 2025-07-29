@@ -1,18 +1,23 @@
 import type { ReactNode } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, Container } from '@chakra-ui/react';
 import { Header } from './Header';
 
 interface LayoutProps {
     children: ReactNode;
+    maxWidth?: string;
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, maxWidth = "1200px" }: LayoutProps) => {
     return (
         <Box minHeight="100vh" bg="gray.50">
             <Header />
-            <Box py={8}>
+            <Container
+                maxW={maxWidth}
+                py={{ base: 4, md: 8 }}
+                px={{ base: 4, md: 6 }}
+            >
                 {children}
-            </Box>
+            </Container>
         </Box>
     );
 };

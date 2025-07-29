@@ -12,8 +12,12 @@ import {
     NativeSelectField,
     createToaster,
     Spinner,
+    Tooltip,
+    Icon,
+    Alert,
+    AlertIcon,
 } from '@chakra-ui/react';
-import { LuPlus, LuSave, LuPlay, LuArrowLeft, LuArrowUp, LuArrowDown, LuHistory, LuSettings } from 'react-icons/lu';
+import { LuPlus, LuSave, LuPlay, LuArrowLeft, LuArrowUp, LuArrowDown, LuHistory, LuSettings, LuInfo } from 'react-icons/lu';
 import { Layout } from '../common/Layout';
 import { NodeBase } from './NodeBase';
 import type { NodeConfig, NodeValidation } from './NodeBase';
@@ -360,42 +364,57 @@ export const WorkflowEditor: React.FC = () => {
 
     return (
         <Layout>
-            <VStack align="stretch" gap={6} maxWidth="1200px" mx="auto" p={4}>
+            <VStack align="stretch" gap={{ base: 4, md: 6 }}>
                 {/* Header */}
-                <HStack justifyContent="space-between" align="center">
-                    <HStack>
-                        <Button
-                            variant="ghost"
-                            onClick={() => navigate('/')}
-                        >
-                            <LuArrowLeft />
-                            Back to Dashboard
-                        </Button>
-                        <Text fontSize="2xl" fontWeight="bold">
-                            {isEditing ? workflow.name || 'Edit Workflow' : 'Create Workflow'}
-                        </Text>
-                    </HStack>
+                <VStack align="stretch" gap={4}>
+                    <HStack justifyContent="space-between" align="center" flexWrap="wrap">
+                        <HStack minW="0" flex={1}>
+                            <Button
+                                variant="ghost"
+                                onClick={() => navigate('/')}
+                                size={{ base: "sm", md: "md" }}
+                            >
+                                <LuArrowLeft />
+                                <Text display={{ base: "none", sm: "inline" }}>Back to Dashboard</Text>
+                                <Text display={{ base: "inline", sm: "none" }}>Back</Text>
+                            </Button>
+                            <Text
+                                fontSize={{ base: "lg", md: "2xl" }}
+                                fontWeight="bold"
+                                noOfLines={1}
+                                minW="0"
+                            >
+                                {isEditing ? workflow.name || 'Edit Workflow' : 'Create Workflow'}
+                            </Text>
+                        </HStack>
 
-                    <HStack>
-                        <Button
-                            onClick={testWorkflow}
-                            variant="outline"
-                            colorPalette="blue"
-                            disabled={testing || workflow.definition.nodes.length === 0}
-                        >
-                            <LuPlay />
-                            {testing ? 'Testing...' : 'Test'}
-                        </Button>
-                        <Button
-                            onClick={saveWorkflow}
-                            colorPalette="green"
-                            disabled={saving}
-                        >
-                            <LuSave />
-                            {saving ? 'Saving...' : 'Save'}
-                        </Button>
+                        <HStack gap={{ base: 2, md: 3 }} flexShrink={0}>
+                            <Button
+                                onClick={testWorkflow}
+                                variant="outline"
+                                colorPalette="blue"
+                                disabled={testing || workflow.definition.nodes.length === 0}
+                                size={{ base: "sm", md: "md" }}
+                            >
+                                <LuPlay />
+                                <Text display={{ base: "none", sm: "inline" }}>
+                                    {testing ? 'Testing...' : 'Test'}
+                                </Text>
+                            </Button>
+                            <Button
+                                onClick={saveWorkflow}
+                                colorPalette="green"
+                                disabled={saving}
+                                size={{ base: "sm", md: "md" }}
+                            >
+                                <LuSave />
+                                <Text display={{ base: "none", sm: "inline" }}>
+                                    {saving ? 'Saving...' : 'Save'}
+                                </Text>
+                            </Button>
+                        </HStack>
                     </HStack>
-                </HStack>
+                </VStack>
 
                 {/* Tab Navigation */}
                 <HStack borderBottom="1px" borderColor="gray.200" mb={6}>
@@ -426,20 +445,44 @@ export const WorkflowEditor: React.FC = () => {
                         {/* Workflow Basic Info */}
                         <Box borderWidth="1px" borderRadius="md" p={4} bg="gray.50">
                             <VStack align="stretch" gap={3}>
-                                <Text fontSize="lg" fontWeight="medium">Workflow Information</Text>
+                                <HStack align="center" gap={2}>
+                                    <Text fontSize="lg" fontWeight="medium">Workflow Information</Text>
+                                    <Tooltip
+                                        label="Configure basic workflow settings including name, description, and activation status"
+                                        placement="top"
+                                    >
+                                        <Icon as={LuInfo} color="gray.400" boxSize={4} />
+                                    </Tooltip>
+                                </HStack>
 
-                                <HStack>
-                                    <Box flex={2}>
-                                        <Text fontSize="sm" fontWeight="medium" mb={1}>Name</Text>
+                                <VStack align="stretch" gap={3}>
+                                    <Box>
+                                        <HStack align="center" gap={2} mb={1}>
+                                            <Text fontSize="sm" fontWeight="medium">Name *</Text>
+                                            <Tooltip
+                                                label="Choose a descriptive name that helps you identify this workflow's purpose"
+                                                placement="top"
+                                            >
+                                                <Icon as={LuInfo} color="gray.400" boxSize={3} />
+                                            </Tooltip>
+                                        </HStack>
                                         <Input
-                                            placeholder="My Workflow"
+                                            placeholder="e.g., Send Welcome Email, Process Order"
                                             value={workflow.name}
                                             onChange={(e) => setWorkflow(prev => ({ ...prev, name: e.target.value }))}
                                             bg="white"
                                         />
                                     </Box>
-                                    <Box flex={1}>
-                                        <Text fontSize="sm" fontWeight="medium" mb={1}>Status</Text>
+                                    <Box>
+                                        <HStack align="center" gap={2} mb={1}>
+                                            <Text fontSize="sm" fontWeight="medium">Status</Text>
+                                            <Tooltip
+                                                label="Active workflows can be triggered via webhook. Inactive workflows are disabled."
+                                                placement="top"
+                                            >
+                                                <Icon as={LuInfo} color="gray.400" boxSize={3} />
+                                            </Tooltip>
+                                        </HStack>
                                         <NativeSelectRoot>
                                             <NativeSelectField
                                                 value={workflow.is_active ? 'active' : 'inactive'}
@@ -454,12 +497,20 @@ export const WorkflowEditor: React.FC = () => {
                                             </NativeSelectField>
                                         </NativeSelectRoot>
                                     </Box>
-                                </HStack>
+                                </VStack>
 
                                 <Box>
-                                    <Text fontSize="sm" fontWeight="medium" mb={1}>Description</Text>
+                                    <HStack align="center" gap={2} mb={1}>
+                                        <Text fontSize="sm" fontWeight="medium">Description</Text>
+                                        <Tooltip
+                                            label="Optional description to document what this workflow does and when it should be used"
+                                            placement="top"
+                                        >
+                                            <Icon as={LuInfo} color="gray.400" boxSize={3} />
+                                        </Tooltip>
+                                    </HStack>
                                     <Textarea
-                                        placeholder="Describe what this workflow does..."
+                                        placeholder="e.g., Automatically sends a welcome email when a new user registers via webhook"
                                         value={workflow.description}
                                         onChange={(e) => setWorkflow(prev => ({ ...prev, description: e.target.value }))}
                                         bg="white"
@@ -471,29 +522,61 @@ export const WorkflowEditor: React.FC = () => {
 
                         {/* Node Addition Interface */}
                         <Box borderWidth="1px" borderRadius="md" p={4}>
-                            <Text fontSize="lg" fontWeight="medium" mb={3}>Add Node</Text>
-                            <HStack wrap="wrap" gap={2}>
-                                {NODE_TYPES.map((nodeType) => (
-                                    <Button
-                                        key={nodeType.value}
-                                        onClick={() => addNode(nodeType.value as NodeConfig['type'])}
-                                        variant="outline"
-                                        size="sm"
-                                        title={nodeType.description}
-                                    >
-                                        <LuPlus />
-                                        {nodeType.label}
-                                    </Button>
-                                ))}
+                            <HStack align="center" gap={2} mb={3}>
+                                <Text fontSize="lg" fontWeight="medium">Add Node</Text>
+                                <Tooltip
+                                    label="Nodes are the building blocks of your workflow. Add them in the order you want them to execute."
+                                    placement="top"
+                                >
+                                    <Icon as={LuInfo} color="gray.400" boxSize={4} />
+                                </Tooltip>
                             </HStack>
 
-                            {workflow.definition.nodes.length === 0 && (
-                                <Box bg="blue.50" p={3} borderRadius="md" mt={3}>
-                                    <Text fontSize="sm" color="blue.700">
-                                        Start by adding a Webhook Trigger node to define how your workflow will be triggered.
-                                    </Text>
-                                </Box>
-                            )}
+                            <VStack align="stretch" gap={3}>
+                                <HStack wrap="wrap" gap={2}>
+                                    {NODE_TYPES.map((nodeType) => (
+                                        <Tooltip
+                                            key={nodeType.value}
+                                            label={nodeType.description}
+                                            placement="top"
+                                        >
+                                            <Button
+                                                onClick={() => addNode(nodeType.value as NodeConfig['type'])}
+                                                variant="outline"
+                                                size="sm"
+                                            >
+                                                <LuPlus />
+                                                {nodeType.label}
+                                            </Button>
+                                        </Tooltip>
+                                    ))}
+                                </HStack>
+
+                                {workflow.definition.nodes.length === 0 && (
+                                    <Alert status="info" borderRadius="md">
+                                        <AlertIcon />
+                                        <VStack align="start" gap={1}>
+                                            <Text fontSize="sm" fontWeight="medium">
+                                                Getting Started
+                                            </Text>
+                                            <Text fontSize="sm">
+                                                1. Start by adding a <strong>Webhook Trigger</strong> to define how your workflow will be triggered<br />
+                                                2. Add <strong>HTTP Request</strong> nodes to call external APIs<br />
+                                                3. Use <strong>Filter</strong> nodes to add conditional logic
+                                            </Text>
+                                        </VStack>
+                                    </Alert>
+                                )}
+
+                                {workflow.definition.nodes.length > 0 && workflow.definition.nodes[0].type !== 'webhook' && (
+                                    <Alert status="warning" borderRadius="md">
+                                        <AlertIcon />
+                                        <Text fontSize="sm">
+                                            <strong>Important:</strong> The first node should be a Webhook Trigger to define how your workflow starts.
+                                        </Text>
+                                    </Alert>
+                                )}
+                            </VStack>
                         </Box>
 
                         {/* Workflow Nodes */}

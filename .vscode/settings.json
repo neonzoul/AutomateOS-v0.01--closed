@@ -1,7 +1,6 @@
 {
     "workbench.editor.empty.hint": "hidden",
     "workbench.secondarySideBar.showLabels": false,
-
     // ---- theme color ---- //
     "workbench.colorCustomizations": {
         // code background
@@ -14,7 +13,6 @@
         "statusBar.background": "#1f1d2b", // Bottom bar color
         "statusBar.noFolderBackground": "#1f1d2b", // Bottom bar when no folder is open
         "statusBar.debuggingBackground": "#561f3d", // contrasting Bottom bar during debugging
-
         // guide line color
         // Indent Guide (inactive)
         "editorIndentGuide.background1": "#FFFFFF25",
@@ -31,11 +29,9 @@
         "editorIndentGuide.activeBackground5": "#ffffffa1",
         "editorIndentGuide.activeBackground6": "#ffffffa1"
     },
-
     "editor.tokenColorCustomizations": {
         // comment color.
         "comments": "#a3a1aac9",
-
         // color with scope. | (check scope with "Developer: Inspect Editor Tokens and Scopes")
         "textMateRules": [
             {
@@ -52,17 +48,19 @@
                     "foreground": "#f1e7e7"
                 }
             },
-              // python multi comment color (in Kira IDE)
+            // python multi comment color (in Kira IDE)
             {
-                "scope": ["punctuation.definition.string.begin.python", "string.quoted.docstring.multi.python", "punctuation.definition.string.end.python"],
+                "scope": [
+                    "punctuation.definition.string.begin.python",
+                    "string.quoted.docstring.multi.python",
+                    "punctuation.definition.string.end.python"
+                ],
                 "settings": {
                     "foreground": "#a3a1aac9"
                 }
-
             }
         ]
     },
-
     //////////////////////////////////////
     //////////////////////////////////////
     //////////////////////////////////////

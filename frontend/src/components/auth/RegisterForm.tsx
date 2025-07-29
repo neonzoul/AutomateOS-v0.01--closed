@@ -6,8 +6,14 @@ import {
     Input,
     VStack,
     Heading,
-    useToast
+    useToast,
+    Text,
+    Tooltip,
+    Icon,
+    Alert,
+    AlertIcon
 } from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services/api';
 
@@ -94,33 +100,70 @@ export const RegisterForm = () => {
                         </Box>
                     )}
 
+                    <Alert status="info" borderRadius="md">
+                        <AlertIcon />
+                        <Text fontSize="sm">
+                            Create your AutomateOS account to start building workflow automations.
+                        </Text>
+                    </Alert>
+
                     <Box width="full">
-                        <Box mb={2} fontWeight="medium">Email address *</Box>
+                        <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
+                            Email address *
+                            <Tooltip
+                                label="This will be your login username. Choose a valid email address you have access to."
+                                placement="top"
+                            >
+                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                            </Tooltip>
+                        </Box>
                         <Input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
+                            placeholder="Enter your email address"
                             disabled={loading}
                             required
                         />
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                            We'll never share your email with anyone else.
+                        </Text>
                     </Box>
 
                     <Box width="full">
-                        <Box mb={2} fontWeight="medium">Password *</Box>
+                        <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
+                            Password *
+                            <Tooltip
+                                label="Choose a strong password with at least 8 characters for better security"
+                                placement="top"
+                            >
+                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                            </Tooltip>
+                        </Box>
                         <Input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
+                            placeholder="Create a secure password"
                             disabled={loading}
                             required
-                            minLength={6}
+                            minLength={8}
                         />
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                            Minimum 8 characters. Use a mix of letters, numbers, and symbols.
+                        </Text>
                     </Box>
 
                     <Box width="full">
-                        <Box mb={2} fontWeight="medium">Confirm Password *</Box>
+                        <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
+                            Confirm Password *
+                            <Tooltip
+                                label="Re-enter your password to make sure it's correct"
+                                placement="top"
+                            >
+                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                            </Tooltip>
+                        </Box>
                         <Input
                             type="password"
                             value={confirmPassword}
@@ -128,8 +171,13 @@ export const RegisterForm = () => {
                             placeholder="Confirm your password"
                             disabled={loading}
                             required
-                            minLength={6}
+                            minLength={8}
                         />
+                        {password && confirmPassword && password !== confirmPassword && (
+                            <Text fontSize="sm" color="red.500" mt={1}>
+                                Passwords do not match
+                            </Text>
+                        )}
                     </Box>
 
                     <Button

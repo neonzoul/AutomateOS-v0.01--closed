@@ -42,6 +42,7 @@ interface Workflow {
 export const WorkflowList = () => {
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [deleteWorkflowId, setDeleteWorkflowId] = useState<number | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const navigate = useNavigate();
@@ -51,10 +52,21 @@ export const WorkflowList = () => {
             setLoading(true);
             const data = await workflowService.getWorkflows();
             setWorkflows(data);
-        } catch (error) {
+        } catch (error: any) {
+            console.error('Failed to fetch workflows:', error);
+
+            let errorMessage = 'Failed to load your workflows. Please try again.';
+            if (error.response?.status === 401) {
+                errorMessage = 'Your session has expired. Please log in again.';
+            } else if (error.response?.status === 500) {
+                errorMessage = 'Server error occurred. Please try again later.';
+            } else if (!navigator.onLine) {
+                errorMessage = 'No internet connection. Please check your network and try again.';
+            }
+
             toaster.create({
-                title: 'Error fetching workflows',
-                description: 'Failed to load your workflows. Please try again.',
+                title: 'Error Loading Workflows',
+                description: errorMessage,
                 type: 'error',
                 duration: 5000,
             });
@@ -72,15 +84,26 @@ export const WorkflowList = () => {
             await workflowService.deleteWorkflow(deleteWorkflowId);
             setWorkflows(workflows.filter(w => w.id !== deleteWorkflowId));
             toaster.create({
-                title: 'Workflow deleted',
-                description: 'The workflow has been successfully deleted.',
+                title: 'Workflow Deleted',
+                description: 'The workflow and all its execution logs have been permanently deleted.',
                 type: 'success',
                 duration: 3000,
             });
-        } catch (error) {
+        } catch (error: any) {
+            console.error('Failed to delete workflow:', error);
+
+            let errorMessage = 'Failed to delete the workflow. Please try again.';
+            if (error.response?.status === 404) {
+                errorMessage = 'Workflow not found. It may have already been deleted.';
+            } else if (error.response?.status === 403) {
+                errorMessage = 'You do not have permission to delete this workflow.';
+            } else if (!navigator.onLine) {
+                errorMessage = 'No internet connection. Please check your network and try again.';
+            }
+
             toaster.create({
-                title: 'Error deleting workflow',
-                description: 'Failed to delete the workflow. Please try again.',
+                title: 'Delete Failed',
+                description: errorMessage,
                 type: 'error',
                 duration: 5000,
             });
@@ -114,6 +137,28 @@ export const WorkflowList = () => {
         );
     }
 
+    if (error) {
+        return (
+            <Center py={8}>
+                <VStack gap="4" textAlign="center">
+                    <Text fontSize="lg" color="red.500" fontWeight="medium">
+                        Failed to Load Workflows
+                    </Text>
+                    <Text color="gray.600" maxW="md">
+                        {error}
+                    </Text>
+                    <Button
+                        colorPalette="blue"
+                        onClick={fetchWorkflows}
+                        size="sm"
+                    >
+                        Try Again
+                    </Button>
+                </VStack>
+            </Center>
+        );
+    }
+
     if (workflows.length === 0) {
         return (
             <Box textAlign="center" py={8}>
@@ -132,9 +177,13 @@ export const WorkflowList = () => {
 
     return (
         <Box>
-            <HStack justify="space-between" mb={6}>
-                <Heading size="lg">Your Workflows</Heading>
-                <Button colorPalette="blue" onClick={handleCreateWorkflow}>
+            <HStack justify="space-between" mb={6} flexWrap="wrap" gap={4}>
+                <Heading size={{ base: "md", md: "lg" }}>Your Workflows</Heading>
+                <Button
+                    colorPalette="blue"
+                    onClick={handleCreateWorkflow}
+                    size={{ base: "sm", md: "md" }}
+                >
                     Create New Workflow
                 </Button>
             </HStack>

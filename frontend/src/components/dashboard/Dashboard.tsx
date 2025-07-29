@@ -34,12 +34,17 @@ export const Dashboard = () => {
         <Box minHeight="100vh" bg="gray.50">
             {/* Header */}
             <Box bg="white" shadow="sm" borderBottom="1px" borderColor="gray.200">
-                <Container maxW="7xl" py={4}>
+                <Container maxW="7xl" py={4} px={{ base: 4, md: 6 }}>
                     <HStack justify="space-between">
-                        <Heading size="lg" color="blue.600">
+                        <Heading size={{ base: "md", md: "lg" }} color="blue.600">
                             AutomateOS
                         </Heading>
-                        <Button variant="ghost" colorPalette="red" onClick={logout}>
+                        <Button
+                            variant="ghost"
+                            colorPalette="red"
+                            onClick={logout}
+                            size={{ base: "sm", md: "md" }}
+                        >
                             Log Out
                         </Button>
                     </HStack>
@@ -47,7 +52,7 @@ export const Dashboard = () => {
             </Box>
 
             {/* Main Content */}
-            <Container maxW="7xl" py={8}>
+            <Container maxW="7xl" py={{ base: 4, md: 8 }} px={{ base: 4, md: 6 }}>
                 <WorkflowList />
             </Container>
         </Box>

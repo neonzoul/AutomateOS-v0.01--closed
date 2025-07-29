@@ -6,8 +6,12 @@ import {
     Input,
     VStack,
     Heading,
-    useToast
+    useToast,
+    Text,
+    Tooltip,
+    Icon
 } from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services/api';
 
@@ -83,19 +87,35 @@ export const LoginForm = () => {
                     )}
 
                     <Box width="full">
-                        <Box mb={2} fontWeight="medium">Email address *</Box>
+                        <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
+                            Email address *
+                            <Tooltip
+                                label="Enter the email address you used to register your account"
+                                placement="top"
+                            >
+                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                            </Tooltip>
+                        </Box>
                         <Input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
+                            placeholder="Enter your email address"
                             disabled={loading}
                             required
                         />
                     </Box>
 
                     <Box width="full">
-                        <Box mb={2} fontWeight="medium">Password *</Box>
+                        <Box mb={2} fontWeight="medium" display="flex" alignItems="center" gap={2}>
+                            Password *
+                            <Tooltip
+                                label="Enter your account password"
+                                placement="top"
+                            >
+                                <Icon as={InfoIcon} color="gray.400" boxSize={3} />
+                            </Tooltip>
+                        </Box>
                         <Input
                             type="password"
                             value={password}
@@ -104,6 +124,9 @@ export const LoginForm = () => {
                             disabled={loading}
                             required
                         />
+                        <Text fontSize="sm" color="gray.500" mt={1}>
+                            Forgot your password? Contact support for assistance.
+                        </Text>
                     </Box>
 
                     <Button
