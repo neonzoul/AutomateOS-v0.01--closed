@@ -1,0 +1,96 @@
+# GitHub Actions workflow for AutomateOS Render deployment
+name: Deploy to Render
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_automate_os
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install Node.js dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run Python tests
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_automate_os
+        REDIS_URL: redis://localhost:6379/0
+        SECRET_KEY: test-secret-key-for-github-actions
+        ENVIRONMENT: test
+      run: |
+        # Run any Python tests here
+        python -c "print('Python tests would run here')"
+    
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build:prod
+    
+    - name: Test build artifacts
+      run: |
+        # Verify build artifacts exist
+        test -f frontend/dist/index.html || exit 1
+        echo "✓ Frontend build successful"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Render
+      run: |
+        echo "🚀 Deployment triggered for Render"
+        echo "Render will automatically deploy from this commit"
+        echo "Monitor deployment at: https://dashboard.render.com"

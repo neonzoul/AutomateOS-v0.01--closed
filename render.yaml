@@ -1,0 +1,102 @@
+# Render Blueprint for AutomateOS
+# This file defines all services needed for production deployment on Render
+
+services:
+  # Web Service - FastAPI + React Frontend
+  - type: web
+    name: automate-os-web
+    runtime: python
+    plan: starter
+    buildCommand: |
+      # Install Python dependencies
+      pip install -r requirements.txt
+      
+      # Build React frontend
+      cd frontend
+      npm install
+      npm run build:prod
+      cd ..
+      
+      # Copy frontend build to static directory
+      mkdir -p static
+      cp -r frontend/dist/* static/
+    startCommand: |
+      # Run database migrations
+      python -m app.migrations
+      
+      # Start web server
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: automate-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: automate-os-redis
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        value: https://automate-os-web.onrender.com
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: API_PORT
+        value: 10000
+      - key: WORKER_CONCURRENCY
+        value: 4
+      - key: JOB_TIMEOUT
+        value: 600
+      - key: LOG_LEVEL
+        value: INFO
+      - key: LOG_FORMAT
+        value: json
+
+  # Background Worker Service
+  - type: worker
+    name: automate-os-worker
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python worker.py
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: automate-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: automate-os-redis
+          property: connectionString
+      - key: WORKER_CONCURRENCY
+        value: 4
+      - key: JOB_TIMEOUT
+        value: 600
+      - key: LOG_LEVEL
+        value: INFO
+
+databases:
+  # PostgreSQL Database
+  - name: automate-os-db
+    databaseName: automate_os
+    user: automate_user
+    plan: starter
+
+services:
+  # Redis Cache and Queue
+  - type: redis
+    name: automate-os-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru

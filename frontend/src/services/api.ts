@@ -1,8 +1,18 @@
 import axios from 'axios';
 
+// Determine API base URL based on environment
+const getApiBaseUrl = () => {
+    // In production, use relative URLs (same domain)
+    if (import.meta.env.PROD) {
+        return '';
+    }
+    // In development, use the development server URL
+    return 'http://127.0.0.1:8000';
+};
+
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: getApiBaseUrl(),
     headers: {
         'Content-Type': 'application/json',
     },
@@ -46,7 +56,7 @@ export const authService = {
         params.append('password', password);
 
         const response = await axios.post('/auth/token', params, {
-            baseURL: 'http://127.0.0.1:8000',
+            baseURL: getApiBaseUrl(),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -59,7 +69,7 @@ export const authService = {
             email,
             password
         }, {
-            baseURL: 'http://127.0.0.1:8000',
+            baseURL: getApiBaseUrl(),
         });
         return response.data;
     },

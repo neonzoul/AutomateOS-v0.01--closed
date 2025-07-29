@@ -5,7 +5,9 @@ from typing import List, Dict, Any
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session, select
+import os
 
 from . import crud, schemas, security, models
 from .database import create_db_and_tables, get_session
@@ -33,6 +35,11 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan
 )
+
+# Mount static files for production (React frontend)
+if settings.is_production and os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    print("✓ Static files mounted for production")
 
 # Import configuration
 from .config import settings
@@ -121,6 +128,40 @@ def login_for_access_token(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to AutomateOS API"}
+
+@app.get("/health")
+def health_check():
+    """
+    Health check endpoint for monitoring and load balancers.
+    
+    Returns basic system status and service availability.
+    """
+    try:
+        # Test database connection
+        with next(get_session()) as session:
+            session.exec(select(models.User).limit(1))
+        db_status = "healthy"
+    except Exception as e:
+        db_status = f"unhealthy: {str(e)}"
+    
+    try:
+        # Test Redis connection
+        from .queue import get_redis_connection
+        redis_conn = get_redis_connection()
+        redis_conn.ping()
+        redis_status = "healthy"
+    except Exception as e:
+        redis_status = f"unhealthy: {str(e)}"
+    
+    return {
+        "status": "healthy" if db_status == "healthy" and redis_status == "healthy" else "degraded",
+        "version": "0.1.0",
+        "environment": settings.environment,
+        "services": {
+            "database": db_status,
+            "redis": redis_status
+        }
+    }
 
 @app.get("/workflows/", response_model=List[schemas.WorkflowPublic])
 def read_user_workflows(
@@ -451,3 +492,20 @@ def cleanup_old_logs(
     session.commit()
     
     return {"deleted_count": len(logs_to_delete)}
+
+# Serve React app for all non-API routes (production only)
+if settings.is_production and os.path.exists("static/index.html"):
+    from fastapi.responses import FileResponse
+    
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        """
+        Serve the React app for all routes that don't match API endpoints.
+        This enables client-side routing to work properly in production.
+        """
+        # Don't serve React app for API routes
+        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("redoc"):
+            raise HTTPException(status_code=404, detail="Not found")
+        
+        # Serve index.html for all other routes
+        return FileResponse("static/index.html")

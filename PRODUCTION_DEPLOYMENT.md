@@ -44,9 +44,9 @@ Choose your deployment method:
 - [Docker Deployment](#docker-deployment)
 - [Traditional VPS](#traditional-vps-deployment)
 
-## Render Deployment
+## Render Deployment (Recommended)
 
-Render is the recommended platform for easy production deployment.
+Render is the recommended platform for easy production deployment. See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) for detailed instructions.
 
 ### Prerequisites
 
