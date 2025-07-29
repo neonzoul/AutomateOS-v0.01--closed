@@ -12,6 +12,7 @@ import os
 from . import crud, schemas, security, models
 from .database import create_db_and_tables, get_session
 from .queue import enqueue_workflow_execution, get_job_status, get_queue_info
+from .config import settings
 
 @asynccontextmanager
 # Use lifespan context manager for database initialization
@@ -41,8 +42,7 @@ if settings.is_production and os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
     print("✓ Static files mounted for production")
 
-# Import configuration
-from .config import settings
+# Configuration already imported above
 
 # CORS Configuration
 # Cross-Origin Resource Sharing (CORS) allows web applications running at one origin

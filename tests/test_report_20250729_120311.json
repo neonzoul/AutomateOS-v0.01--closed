@@ -1,0 +1,112 @@
+{
+  "timestamp": "2025-07-29T12:03:11.258039",
+  "duration": 5.401413917541504,
+  "summary": {
+    "total_suites": 6,
+    "successful_suites": 0,
+    "failed_suites": 6,
+    "total_tests": 6,
+    "passed_tests": 0,
+    "failed_tests": 3,
+    "success_rate": 0.0,
+    "overall_success": false
+  },
+  "test_results": {
+    "Authentication Unit Tests": {
+      "name": "Authentication Unit Tests",
+      "file": "tests/test_auth_unit.py",
+      "success": false,
+      "duration": 1.0420360565185547,
+      "passed": 0,
+      "failed": 1,
+      "total": 1,
+      "return_code": 2,
+      "summary": "",
+      "errors": [
+        "__________________ ERROR collecting tests/test_auth_unit.py ___________________"
+      ],
+      "stdout": "============================= test session starts =============================\ncollecting ... collected 0 items / 1 error\n\n=================================== ERRORS ====================================\n__________________ ERROR collecting tests/test_auth_unit.py ___________________\nC:\\Users\\Narue\\AppData\\Roaming\\Python\\Python313\\site-packages\\starlette\\testclient.py:44: in <module>\n    import httpx\nE   ModuleNotFoundError: No module named 'httpx'\n\nDuring handling of the above exception, another exception occurred:\ntests\\test_auth_unit.py:8: in <module>\n    from fastapi.testclient import TestClient\nC:\\Users\\Narue\\AppData\\Roaming\\Python\\Python313\\site-packages\\fastapi\\testclient.py:1: in <module>\n    from starlette.testclient import TestClient as TestClient  # noqa\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\Narue\\AppData\\Roaming\\Python\\Python313\\site-packages\\starlette\\testclient.py:46: in <module>\n    raise RuntimeError(\nE   RuntimeError: The starlette.testclient module requires the httpx package to be installed.\nE   You can install this with:\nE       $ pip install httpx\n=========================== short test summary info ===========================\nERROR tests/test_auth_unit.py - RuntimeError: The starlette.testclient module...\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n============================== 1 error in 0.44s ===============================\n",
+      "stderr": ""
+    },
+    "Workflow Integration Tests": {
+      "name": "Workflow Integration Tests",
+      "file": "tests/test_workflow_integration.py",
+      "success": false,
+      "duration": 0.8010773658752441,
+      "passed": 0,
+      "failed": 1,
+      "total": 1,
+      "return_code": 2,
+      "summary": "",
+      "errors": [
+        "_____________ ERROR collecting tests/test_workflow_integration.py _____________"
+      ],
+      "stdout": "============================= test session starts =============================\ncollecting ... collected 0 items / 1 error\n\n=================================== ERRORS ====================================\n_____________ ERROR collecting tests/test_workflow_integration.py _____________\nC:\\Users\\Narue\\AppData\\Roaming\\Python\\Python313\\site-packages\\starlette\\testclient.py:44: in <module>\n    import httpx\nE   ModuleNotFoundError: No module named 'httpx'\n\nDuring handling of the above exception, another exception occurred:\ntests\\test_workflow_integration.py:8: in <module>\n    from fastapi.testclient import TestClient\nC:\\Users\\Narue\\AppData\\Roaming\\Python\\Python313\\site-packages\\fastapi\\testclient.py:1: in <module>\n    from starlette.testclient import TestClient as TestClient  # noqa\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\Narue\\AppData\\Roaming\\Python\\Python313\\site-packages\\starlette\\testclient.py:46: in <module>\n    raise RuntimeError(\nE   RuntimeError: The starlette.testclient module requires the httpx package to be installed.\nE   You can install this with:\nE       $ pip install httpx\n=========================== short test summary info ===========================\nERROR tests/test_workflow_integration.py - RuntimeError: The starlette.testcl...\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n============================== 1 error in 0.43s ===============================\n",
+      "stderr": ""
+    },
+    "Node Execution Tests": {
+      "name": "Node Execution Tests",
+      "file": "tests/test_node_execution.py",
+      "success": false,
+      "duration": 0.8662369251251221,
+      "passed": 0,
+      "failed": 1,
+      "total": 1,
+      "return_code": 2,
+      "summary": "",
+      "errors": [
+        "________________ ERROR collecting tests/test_node_execution.py ________________"
+      ],
+      "stdout": "============================= test session starts =============================\ncollecting ... collected 0 items / 1 error\n\n=================================== ERRORS ====================================\n________________ ERROR collecting tests/test_node_execution.py ________________\nImportError while importing test module 'F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_node_execution.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\nC:\\Python313\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_node_execution.py:18: in <module>\n    from app.nodes.webhook_trigger import WebhookTrigger\nE   ImportError: cannot import name 'WebhookTrigger' from 'app.nodes.webhook_trigger' (F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\..\\app\\nodes\\webhook_trigger.py)\n=========================== short test summary info ===========================\nERROR tests/test_node_execution.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n============================== 1 error in 0.51s ===============================\n",
+      "stderr": ""
+    },
+    "Frontend Component Tests": {
+      "name": "Frontend Component Tests",
+      "file": "tests/test_frontend_components.py",
+      "success": false,
+      "duration": 0.06834769248962402,
+      "passed": 0,
+      "failed": 0,
+      "total": 1,
+      "return_code": 1,
+      "summary": "Script execution failed",
+      "errors": [
+        "Traceback (most recent call last):\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_frontend_components.py\", line 416, in <module>\n    success = run_frontend_tests()\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_frontend_components.py\", line 312, in run_frontend_tests\n    print(\"\\U0001f9ea Running Frontend Component Tests\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f9ea' in position 0: character maps to <undefined>\n"
+      ],
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_frontend_components.py\", line 416, in <module>\n    success = run_frontend_tests()\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_frontend_components.py\", line 312, in run_frontend_tests\n    print(\"\\U0001f9ea Running Frontend Component Tests\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f9ea' in position 0: character maps to <undefined>\n"
+    },
+    "End-to-End Tests": {
+      "name": "End-to-End Tests",
+      "file": "tests/test_e2e_workflow.py",
+      "success": false,
+      "duration": 0.5248293876647949,
+      "passed": 0,
+      "failed": 0,
+      "total": 1,
+      "return_code": 1,
+      "summary": "Script execution failed",
+      "errors": [
+        "Traceback (most recent call last):\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_e2e_workflow.py\", line 628, in <module>\n    success = run_e2e_tests()\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_e2e_workflow.py\", line 580, in run_e2e_tests\n    print(\"\\U0001f9ea Running End-to-End Tests\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f9ea' in position 0: character maps to <undefined>\n"
+      ],
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_e2e_workflow.py\", line 628, in <module>\n    success = run_e2e_tests()\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_e2e_workflow.py\", line 580, in run_e2e_tests\n    print(\"\\U0001f9ea Running End-to-End Tests\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f9ea' in position 0: character maps to <undefined>\n"
+    },
+    "Load Performance Tests": {
+      "name": "Load Performance Tests",
+      "file": "tests/test_load_performance.py",
+      "success": false,
+      "duration": 0.7744936943054199,
+      "passed": 0,
+      "failed": 0,
+      "total": 1,
+      "return_code": 1,
+      "summary": "Script execution failed",
+      "errors": [
+        "Traceback (most recent call last):\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_load_performance.py\", line 547, in <module>\n    success = run_load_tests()\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_load_performance.py\", line 462, in run_load_tests\n    print(\"\\U0001f9ea Running Load and Performance Tests\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f9ea' in position 0: character maps to <undefined>\n"
+      ],
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_load_performance.py\", line 547, in <module>\n    success = run_load_tests()\n  File \"F:\\Coding-Area\\Projects\\1-automate-os-v0.1\\tests\\test_load_performance.py\", line 462, in run_load_tests\n    print(\"\\U0001f9ea Running Load and Performance Tests\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f9ea' in position 0: character maps to <undefined>\n"
+    }
+  }
+}
