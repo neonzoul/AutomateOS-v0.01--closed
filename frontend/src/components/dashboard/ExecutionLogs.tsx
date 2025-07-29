@@ -7,13 +7,14 @@ import {
     Text,
     Badge,
     Button,
-    Select,
     Spinner,
     Alert,
     createToaster,
     Card,
     CardBody,
     CardHeader,
+    NativeSelectRoot,
+    NativeSelectField,
 } from '@chakra-ui/react';
 import { workflowService } from '../../services/api';
 import { ExecutionLogSummary, ExecutionLogFilters } from '../../types/executionLog';
@@ -154,17 +155,17 @@ export const ExecutionLogs = ({ workflowId, workflowName }: ExecutionLogsProps) 
 
                     <HStack gap="3">
                         <Text fontSize="sm" color="gray.600">Filter by status:</Text>
-                        <Select
-                            value={filters.status || 'all'}
-                            onChange={(e) => handleStatusFilterChange(e.target.value)}
-                            size="sm"
-                            width="120px"
-                        >
-                            <option value="all">All</option>
-                            <option value="success">Success</option>
-                            <option value="failed">Failed</option>
-                            <option value="running">Running</option>
-                        </Select>
+                        <NativeSelectRoot size="sm" width="120px">
+                            <NativeSelectField
+                                value={filters.status || 'all'}
+                                onChange={(e) => handleStatusFilterChange(e.target.value)}
+                            >
+                                <option value="all">All</option>
+                                <option value="success">Success</option>
+                                <option value="failed">Failed</option>
+                                <option value="running">Running</option>
+                            </NativeSelectField>
+                        </NativeSelectRoot>
                     </HStack>
                 </HStack>
             </CardHeader>

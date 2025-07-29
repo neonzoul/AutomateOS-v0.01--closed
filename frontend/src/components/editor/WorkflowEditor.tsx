@@ -10,7 +10,6 @@ import {
     Textarea,
     NativeSelectRoot,
     NativeSelectField,
-    Tabs,
     createToaster,
     Spinner,
 } from '@chakra-ui/react';
@@ -64,6 +63,7 @@ export const WorkflowEditor: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [testing, setTesting] = useState(false);
     const [validationResults, setValidationResults] = useState<Record<string, NodeValidation>>({});
+    const [activeTab, setActiveTab] = useState<'editor' | 'logs'>('editor');
 
     // Load workflow if editing
     useEffect(() => {
@@ -397,149 +397,154 @@ export const WorkflowEditor: React.FC = () => {
                     </HStack>
                 </HStack>
 
-                {/* Tabs */}
-                <Tabs.Root defaultValue="editor" variant="enclosed">
-                    <Tabs.List>
-                        <Tabs.Trigger value="editor">
-                            <LuSettings />
-                            Editor
-                        </Tabs.Trigger>
-                        {isEditing && workflow.id && (
-                            <Tabs.Trigger value="logs">
-                                <LuHistory />
-                                Execution Logs
-                            </Tabs.Trigger>
-                        )}
-                    </Tabs.List>
+                {/* Tab Navigation */}
+                <HStack borderBottom="1px" borderColor="gray.200" mb={6}>
+                    <Button
+                        variant={activeTab === 'editor' ? 'solid' : 'ghost'}
+                        onClick={() => setActiveTab('editor')}
+                        size="sm"
+                    >
+                        <LuSettings />
+                        Editor
+                    </Button>
+                    {isEditing && workflow.id && (
+                        <Button
+                            variant={activeTab === 'logs' ? 'solid' : 'ghost'}
+                            onClick={() => setActiveTab('logs')}
+                            size="sm"
+                        >
+                            <LuHistory />
+                            Execution Logs
+                        </Button>
+                    )}
+                </HStack>
 
-                    <Tabs.Content value="editor">
-                        <VStack align="stretch" gap={6}>
+                {/* Tab Content */}
+                {activeTab === 'editor' && (
+                    <VStack align="stretch" gap={6}>
 
-                            {/* Workflow Basic Info */}
-                            <Box borderWidth="1px" borderRadius="md" p={4} bg="gray.50">
-                                <VStack align="stretch" gap={3}>
-                                    <Text fontSize="lg" fontWeight="medium">Workflow Information</Text>
+                        {/* Workflow Basic Info */}
+                        <Box borderWidth="1px" borderRadius="md" p={4} bg="gray.50">
+                            <VStack align="stretch" gap={3}>
+                                <Text fontSize="lg" fontWeight="medium">Workflow Information</Text>
 
-                                    <HStack>
-                                        <Box flex={2}>
-                                            <Text fontSize="sm" fontWeight="medium" mb={1}>Name</Text>
-                                            <Input
-                                                placeholder="My Workflow"
-                                                value={workflow.name}
-                                                onChange={(e) => setWorkflow(prev => ({ ...prev, name: e.target.value }))}
-                                                bg="white"
-                                            />
-                                        </Box>
-                                        <Box flex={1}>
-                                            <Text fontSize="sm" fontWeight="medium" mb={1}>Status</Text>
-                                            <NativeSelectRoot>
-                                                <NativeSelectField
-                                                    value={workflow.is_active ? 'active' : 'inactive'}
-                                                    onChange={(e) => setWorkflow(prev => ({
-                                                        ...prev,
-                                                        is_active: e.target.value === 'active'
-                                                    }))}
-                                                    bg="white"
-                                                >
-                                                    <option value="active">Active</option>
-                                                    <option value="inactive">Inactive</option>
-                                                </NativeSelectField>
-                                            </NativeSelectRoot>
-                                        </Box>
-                                    </HStack>
-
-                                    <Box>
-                                        <Text fontSize="sm" fontWeight="medium" mb={1}>Description</Text>
-                                        <Textarea
-                                            placeholder="Describe what this workflow does..."
-                                            value={workflow.description}
-                                            onChange={(e) => setWorkflow(prev => ({ ...prev, description: e.target.value }))}
+                                <HStack>
+                                    <Box flex={2}>
+                                        <Text fontSize="sm" fontWeight="medium" mb={1}>Name</Text>
+                                        <Input
+                                            placeholder="My Workflow"
+                                            value={workflow.name}
+                                            onChange={(e) => setWorkflow(prev => ({ ...prev, name: e.target.value }))}
                                             bg="white"
-                                            rows={2}
                                         />
                                     </Box>
-                                </VStack>
-                            </Box>
-
-                            {/* Node Addition Interface */}
-                            <Box borderWidth="1px" borderRadius="md" p={4}>
-                                <Text fontSize="lg" fontWeight="medium" mb={3}>Add Node</Text>
-                                <HStack wrap="wrap" gap={2}>
-                                    {NODE_TYPES.map((nodeType) => (
-                                        <Button
-                                            key={nodeType.value}
-                                            onClick={() => addNode(nodeType.value as NodeConfig['type'])}
-                                            variant="outline"
-                                            size="sm"
-                                            title={nodeType.description}
-                                        >
-                                            <LuPlus />
-                                            {nodeType.label}
-                                        </Button>
-                                    ))}
+                                    <Box flex={1}>
+                                        <Text fontSize="sm" fontWeight="medium" mb={1}>Status</Text>
+                                        <NativeSelectRoot>
+                                            <NativeSelectField
+                                                value={workflow.is_active ? 'active' : 'inactive'}
+                                                onChange={(e) => setWorkflow(prev => ({
+                                                    ...prev,
+                                                    is_active: e.target.value === 'active'
+                                                }))}
+                                                bg="white"
+                                            >
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </NativeSelectField>
+                                        </NativeSelectRoot>
+                                    </Box>
                                 </HStack>
 
-                                {workflow.definition.nodes.length === 0 && (
-                                    <Box bg="blue.50" p={3} borderRadius="md" mt={3}>
-                                        <Text fontSize="sm" color="blue.700">
-                                            Start by adding a Webhook Trigger node to define how your workflow will be triggered.
-                                        </Text>
-                                    </Box>
-                                )}
-                            </Box>
-
-                            {/* Workflow Nodes */}
-                            {workflow.definition.nodes.length > 0 && (
                                 <Box>
-                                    <Text fontSize="lg" fontWeight="medium" mb={4}>
-                                        Workflow Nodes ({workflow.definition.nodes.length})
-                                    </Text>
-
-                                    <VStack align="stretch" gap={4}>
-                                        {workflow.definition.nodes.map((node, index) => (
-                                            <Box key={node.id}>
-                                                {index > 0 && (
-                                                    <Box textAlign="center" py={2}>
-                                                        <Text fontSize="sm" color="gray.500">↓ then</Text>
-                                                    </Box>
-                                                )}
-                                                {renderNode(node)}
-                                            </Box>
-                                        ))}
-                                    </VStack>
-                                </Box>
-                            )}
-
-                            {/* Workflow JSON Preview (for debugging) */}
-                            {workflow.definition.nodes.length > 0 && (
-                                <Box borderWidth="1px" borderRadius="md" p={4} bg="gray.50">
-                                    <Text fontSize="sm" fontWeight="medium" mb={2}>Workflow Definition (JSON)</Text>
-                                    <Box
+                                    <Text fontSize="sm" fontWeight="medium" mb={1}>Description</Text>
+                                    <Textarea
+                                        placeholder="Describe what this workflow does..."
+                                        value={workflow.description}
+                                        onChange={(e) => setWorkflow(prev => ({ ...prev, description: e.target.value }))}
                                         bg="white"
-                                        p={3}
-                                        borderRadius="md"
-                                        fontSize="xs"
-                                        fontFamily="mono"
-                                        maxHeight="200px"
-                                        overflowY="auto"
+                                        rows={2}
+                                    />
+                                </Box>
+                            </VStack>
+                        </Box>
+
+                        {/* Node Addition Interface */}
+                        <Box borderWidth="1px" borderRadius="md" p={4}>
+                            <Text fontSize="lg" fontWeight="medium" mb={3}>Add Node</Text>
+                            <HStack wrap="wrap" gap={2}>
+                                {NODE_TYPES.map((nodeType) => (
+                                    <Button
+                                        key={nodeType.value}
+                                        onClick={() => addNode(nodeType.value as NodeConfig['type'])}
+                                        variant="outline"
+                                        size="sm"
+                                        title={nodeType.description}
                                     >
-                                        <pre>{JSON.stringify(workflow.definition, null, 2)}</pre>
-                                    </Box>
+                                        <LuPlus />
+                                        {nodeType.label}
+                                    </Button>
+                                ))}
+                            </HStack>
+
+                            {workflow.definition.nodes.length === 0 && (
+                                <Box bg="blue.50" p={3} borderRadius="md" mt={3}>
+                                    <Text fontSize="sm" color="blue.700">
+                                        Start by adding a Webhook Trigger node to define how your workflow will be triggered.
+                                    </Text>
                                 </Box>
                             )}
-                        </VStack>
-                    </Tabs.Content>
+                        </Box>
 
-                    {isEditing && workflow.id && (
-                        <Tabs.Content value="logs">
-                            <ExecutionLogs
-                                workflowId={workflow.id}
-                                workflowName={workflow.name}
-                            />
-                        </Tabs.Content>
-                    )}
-                </Tabs.Root>
-            </VStack>
-        </Layout>
+                        {/* Workflow Nodes */}
+                        {workflow.definition.nodes.length > 0 && (
+                            <Box>
+                                <Text fontSize="lg" fontWeight="medium" mb={4}>
+                                    Workflow Nodes ({workflow.definition.nodes.length})
+                                </Text>
+
+                                <VStack align="stretch" gap={4}>
+                                    {workflow.definition.nodes.map((node, index) => (
+                                        <Box key={node.id}>
+                                            {index > 0 && (
+                                                <Box textAlign="center" py={2}>
+                                                    <Text fontSize="sm" color="gray.500">↓ then</Text>
+                                                </Box>
+                                            )}
+                                            {renderNode(node)}
+                                        </Box>
+                                    ))}
+                                </VStack>
+                            </Box>
+                        )}
+
+                        {/* Workflow JSON Preview (for debugging) */}
+                        {workflow.definition.nodes.length > 0 && (
+                            <Box borderWidth="1px" borderRadius="md" p={4} bg="gray.50">
+                                <Text fontSize="sm" fontWeight="medium" mb={2}>Workflow Definition (JSON)</Text>
+                                <Box
+                                    bg="white"
+                                    p={3}
+                                    borderRadius="md"
+                                    fontSize="xs"
+                                    fontFamily="mono"
+                                    maxHeight="200px"
+                                    overflowY="auto"
+                                >
+                                    <pre>{JSON.stringify(workflow.definition, null, 2)}</pre>
+                                </Box>
+                            </Box>
+                        )}
+                    </VStack>
+                )}
+
+                {activeTab === 'logs' && isEditing && workflow.id && (
+                    <ExecutionLogs
+                        workflowId={workflow.id}
+                        workflowName={workflow.name}
+                    />
+                )}
+            </VStack >
+        </Layout >
     );
 };

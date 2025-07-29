@@ -19,11 +19,17 @@ from sqlmodel import Session
 from .database import get_session
 from . import crud, models
 
-# Redis connection configuration
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+# Import configuration
+from .config import settings
 
-# Initialize Redis connection
-redis_conn = Redis.from_url(REDIS_URL, decode_responses=False)
+# Initialize Redis connection with production configuration
+redis_conn = Redis.from_url(
+    settings.redis_url, 
+    decode_responses=False,
+    socket_keepalive=True,
+    socket_keepalive_options={},
+    health_check_interval=30
+)
 
 # Initialize RQ queue for workflow execution
 workflow_queue = Queue("workflow_execution", connection=redis_conn)
@@ -64,7 +70,7 @@ def enqueue_workflow_execution(workflow_id: int, payload: Dict[str, Any]) -> str
         execute_workflow_job,
         workflow_id,
         payload,
-        job_timeout="10m",  # 10 minute timeout for workflow execution
+        job_timeout=settings.job_timeout,  # Configurable timeout
         result_ttl=86400,   # Keep results for 24 hours
         failure_ttl=86400   # Keep failed job info for 24 hours
     )

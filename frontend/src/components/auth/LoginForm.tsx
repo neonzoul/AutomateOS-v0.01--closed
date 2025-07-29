@@ -6,14 +6,10 @@ import {
     Input,
     VStack,
     Heading,
-    createToaster
+    useToast
 } from '@chakra-ui/react';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services/api';
-
-const toaster = createToaster({
-    placement: 'top',
-});
 
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -22,6 +18,7 @@ export const LoginForm = () => {
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+    const toast = useToast();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -33,10 +30,11 @@ export const LoginForm = () => {
             const accessToken = response.access_token;
             login(accessToken);
 
-            toaster.create({
+            toast({
                 title: 'Login Successful.',
-                type: 'success',
+                status: 'success',
                 duration: 3000,
+                isClosable: true,
             });
 
             // Navigate to dashboard after successful login
@@ -54,11 +52,12 @@ export const LoginForm = () => {
 
             setError(errorMessage);
 
-            toaster.create({
+            toast({
                 title: 'Login Failed',
                 description: errorMessage,
-                type: 'error',
+                status: 'error',
                 duration: 5000,
+                isClosable: true,
             });
         } finally {
             setLoading(false);

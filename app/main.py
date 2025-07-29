@@ -16,7 +16,13 @@ from .queue import enqueue_workflow_execution, get_job_status, get_queue_info
 async def lifespan(app: FastAPI):
     # Code to run on startup
     print("INFO:     Creating database and tables...")
-    create_db_and_tables()
+    if settings.is_production:
+        # Run full migrations in production
+        from .migrations import run_migrations
+        run_migrations()
+    else:
+        # Simple table creation in development
+        create_db_and_tables()
     yield
     # Code to run on shutdown (if any)
     print("INFO:     Application shutdown.")
@@ -28,15 +34,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Import configuration
+from .config import settings
+
 # CORS Configuration
 # Cross-Origin Resource Sharing (CORS) allows web applications running at one origin
 # (domain, protocol, or port) to access resources from a different origin.
 # This is essential for our architecture where the React frontend and FastAPI backend
 # run on different ports during development.
-origins = [
-    "http://localhost:5173",  # The default port for Vite React dev server
-    "http://localhost:3000",  # A common alternative for React dev servers
-]
+origins = settings.allowed_origins
 
 # Add the CORS middleware to the FastAPI application
 # - allow_origins: List of allowed origins (frontend URLs)

@@ -10,26 +10,37 @@ import NodeTest from './components/editor/NodeTest';
 
 function App() {
   return (
-    <Box>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Route */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/test-nodes" element={<NodeDemo />} />
-          <Route path="/node-test" element={<NodeTest />} />
-
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/workflows/new" element={<WorkflowEditor />} />
-            <Route path="/workflows/:id/edit" element={<WorkflowEditor />} />
-            <Route path="/workflows/:id/logs" element={<WorkflowLogsPage />} />
-            <Route path="/node-demo" element={<NodeDemo />} />
-            {/* Add other protected routes here later */}
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </Box>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/node-demo" element={<NodeDemo />} />
+        <Route path="/node-test" element={<NodeTest />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workflows/:id/edit"
+          element={
+            <ProtectedRoute>
+              <WorkflowEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workflows/:id/logs"
+          element={
+            <ProtectedRoute>
+              <WorkflowLogsPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

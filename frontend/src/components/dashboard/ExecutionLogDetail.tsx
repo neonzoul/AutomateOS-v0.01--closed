@@ -12,7 +12,6 @@ import {
     Card,
     CardBody,
     CardHeader,
-    Collapsible,
     createToaster,
     Code,
     Separator,
@@ -214,27 +213,25 @@ export const ExecutionLogDetail = ({ logId, onBack }: ExecutionLogDetailProps) =
                             <Heading size="md">Input Payload</Heading>
                         </Button>
 
-                        <Collapsible.Root open={expandedSections.payload}>
-                            <Collapsible.Content>
-                                <Box
-                                    p="4"
-                                    bg="gray.50"
-                                    borderRadius="md"
-                                    border="1px"
-                                    borderColor="gray.200"
+                        {expandedSections.payload && (
+                            <Box
+                                p="4"
+                                bg="gray.50"
+                                borderRadius="md"
+                                border="1px"
+                                borderColor="gray.200"
+                            >
+                                <Code
+                                    display="block"
+                                    whiteSpace="pre-wrap"
+                                    fontSize="sm"
+                                    bg="transparent"
+                                    p="0"
                                 >
-                                    <Code
-                                        display="block"
-                                        whiteSpace="pre-wrap"
-                                        fontSize="sm"
-                                        bg="transparent"
-                                        p="0"
-                                    >
-                                        {formatJson(log.payload)}
-                                    </Code>
-                                </Box>
-                            </Collapsible.Content>
-                        </Collapsible.Root>
+                                    {formatJson(log.payload)}
+                                </Code>
+                            </Box>
+                        )}
                     </Box>
 
                     {/* Execution Result */}
@@ -252,27 +249,25 @@ export const ExecutionLogDetail = ({ logId, onBack }: ExecutionLogDetailProps) =
                                     <Heading size="md">Execution Result</Heading>
                                 </Button>
 
-                                <Collapsible.Root open={expandedSections.result}>
-                                    <Collapsible.Content>
-                                        <Box
-                                            p="4"
-                                            bg="green.50"
-                                            borderRadius="md"
-                                            border="1px"
-                                            borderColor="green.200"
+                                {expandedSections.result && (
+                                    <Box
+                                        p="4"
+                                        bg="green.50"
+                                        borderRadius="md"
+                                        border="1px"
+                                        borderColor="green.200"
+                                    >
+                                        <Code
+                                            display="block"
+                                            whiteSpace="pre-wrap"
+                                            fontSize="sm"
+                                            bg="transparent"
+                                            p="0"
                                         >
-                                            <Code
-                                                display="block"
-                                                whiteSpace="pre-wrap"
-                                                fontSize="sm"
-                                                bg="transparent"
-                                                p="0"
-                                            >
-                                                {formatJson(log.result)}
-                                            </Code>
-                                        </Box>
-                                    </Collapsible.Content>
-                                </Collapsible.Root>
+                                            {formatJson(log.result)}
+                                        </Code>
+                                    </Box>
+                                )}
                             </Box>
                         </>
                     )}
@@ -292,26 +287,24 @@ export const ExecutionLogDetail = ({ logId, onBack }: ExecutionLogDetailProps) =
                                     <Heading size="md" color="red.600">Error Details</Heading>
                                 </Button>
 
-                                <Collapsible.Root open={expandedSections.error}>
-                                    <Collapsible.Content>
-                                        <Box
-                                            p="4"
-                                            bg="red.50"
-                                            borderRadius="md"
-                                            border="1px"
-                                            borderColor="red.200"
+                                {expandedSections.error && (
+                                    <Box
+                                        p="4"
+                                        bg="red.50"
+                                        borderRadius="md"
+                                        border="1px"
+                                        borderColor="red.200"
+                                    >
+                                        <Text
+                                            fontSize="sm"
+                                            color="red.800"
+                                            whiteSpace="pre-wrap"
+                                            fontFamily="mono"
                                         >
-                                            <Text
-                                                fontSize="sm"
-                                                color="red.800"
-                                                whiteSpace="pre-wrap"
-                                                fontFamily="mono"
-                                            >
-                                                {log.error_message}
-                                            </Text>
-                                        </Box>
-                                    </Collapsible.Content>
-                                </Collapsible.Root>
+                                            {log.error_message}
+                                        </Text>
+                                    </Box>
+                                )}
                             </Box>
                         </>
                     )}

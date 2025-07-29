@@ -5,13 +5,15 @@ This module provides the SQLModel engine setup and database initialization funct
 """
 
 from sqlmodel import create_engine, SQLModel, Session
+from .config import settings
 
-# The database file will be named "database.db"
-DATABASE_URL = "sqlite:///database.db"
-
-# The engine is the main point of contact with the database
-# echo=True enables SQL statement logging for debugging
-engine = create_engine(DATABASE_URL, echo=True)
+# Create database engine with configuration-based URL and echo settings
+engine = create_engine(
+    settings.database_url, 
+    echo=settings.database_echo,
+    # PostgreSQL-specific connection arguments
+    connect_args={} if settings.database_url.startswith("postgresql") else {"check_same_thread": False}
+)
 
 def create_db_and_tables():
     """Creates the database file and all tables based on SQLModel metadata."""

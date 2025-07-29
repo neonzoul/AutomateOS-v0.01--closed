@@ -92,5 +92,8 @@
     "codeium.enableCodeLens": "hide_x",
     "workbench.colorTheme": "Kiro Dark",
     "workbench.iconTheme": "material-icon-theme",
-    "git.openRepositoryInParentFolders": "never"
+    "git.openRepositoryInParentFolders": "never",
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }

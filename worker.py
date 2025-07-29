@@ -19,6 +19,7 @@ import sys
 import signal
 from rq import Worker
 from app.queue import get_redis_connection, get_workflow_queue
+from app.config import settings
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully."""
@@ -36,12 +37,20 @@ def main():
     queue = get_workflow_queue()
     
     print(f"Starting AutomateOS worker...")
-    print(f"Redis URL: {os.getenv('REDIS_URL', 'redis://localhost:6379/0')}")
+    print(f"Environment: {settings.environment}")
+    print(f"Redis URL: {settings.redis_url}")
     print(f"Queue: {queue.name}")
     print(f"Worker PID: {os.getpid()}")
+    print(f"Job timeout: {settings.job_timeout}s")
     
-    # Create and start worker
-    worker = Worker([queue], connection=redis_conn)
+    # Create and start worker with configuration
+    worker = Worker(
+        [queue], 
+        connection=redis_conn,
+        default_worker_ttl=settings.job_timeout + 60,  # Worker TTL slightly longer than job timeout
+        default_result_ttl=86400,  # Keep results for 24 hours
+        default_failure_ttl=86400  # Keep failed jobs for 24 hours
+    )
     print("Worker started. Waiting for jobs...")
     worker.work()
 
