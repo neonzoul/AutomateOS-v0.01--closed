@@ -26,7 +26,7 @@ def run_command(command, cwd=None, check=True):
         )
         return result
     except subprocess.CalledProcessError as e:
-        print(f"❌ Command failed: {command}")
+        print(f"[X] Command failed: {command}")
         print(f"Error: {e.stderr}")
         if check:
             sys.exit(1)
@@ -36,17 +36,17 @@ def check_python_version():
     """Check if Python version is 3.9 or higher."""
     version = sys.version_info
     if version.major < 3 or (version.major == 3 and version.minor < 9):
-        print("❌ Python 3.9 or higher is required")
+        print("[X] Python 3.9 or higher is required")
         print(f"Current version: {version.major}.{version.minor}.{version.micro}")
         sys.exit(1)
-    print(f"✅ Python {version.major}.{version.minor}.{version.micro} detected")
+    print(f"[OK] Python {version.major}.{version.minor}.{version.micro} detected")
 
 def check_node_version():
     """Check if Node.js is installed and version is 18 or higher."""
     try:
         result = run_command("node --version", check=False)
         if result.returncode != 0:
-            print("❌ Node.js is not installed")
+            print("[X] Node.js is not installed")
             print("Please install Node.js 18 or higher from https://nodejs.org/")
             return False
         
@@ -54,13 +54,13 @@ def check_node_version():
         major_version = int(version_str.split('.')[0])
         
         if major_version < 18:
-            print(f"❌ Node.js 18 or higher is required (found {version_str})")
+            print(f"[X] Node.js 18 or higher is required (found {version_str})")
             return False
         
-        print(f"✅ Node.js {version_str} detected")
+        print(f"[OK] Node.js {version_str} detected")
         return True
     except Exception as e:
-        print(f"❌ Error checking Node.js version: {e}")
+        print(f"[X] Error checking Node.js version: {e}")
         return False
 
 def check_redis():
@@ -68,24 +68,20 @@ def check_redis():
     try:
         result = run_command("redis-cli ping", check=False)
         if result.returncode == 0 and "PONG" in result.stdout:
-            print("✅ Redis is running")
+            print("[OK] Redis is running")
             return True
         else:
-            print("⚠️  Redis is not running")
+            print("[!] Redis is not running")
             return False
     except Exception:
-        print("⚠️  Redis is not installed or not running")
+        print("[!] Redis is not installed or not running")
         return False
 
 def create_env_file(environment="development"):
     """Create .env file with default configuration."""
     env_path = Path(".env")
     
-    if env_path.exists():
-        response = input("📝 .env file already exists. Overwrite? (y/N): ")
-        if response.lower() != 'y':
-            print("Skipping .env file creation")
-            return
+    
     
     # Generate a secure secret key
     secret_key = secrets.token_urlsafe(32)
@@ -116,20 +112,20 @@ LOG_LEVEL=INFO
     with open(env_path, 'w') as f:
         f.write(env_content)
     
-    print(f"✅ Created .env file for {environment} environment")
+    print(f"[OK] Created .env file for {environment} environment")
 
 def setup_python_environment():
     """Set up Python virtual environment and install dependencies."""
-    print("\n🐍 Setting up Python environment...")
+    print("\nSetting up Python environment...")
     
     # Create virtual environment if it doesn't exist
     venv_path = Path("venv")
     if not venv_path.exists():
         print("Creating virtual environment...")
         run_command(f"{sys.executable} -m venv venv")
-        print("✅ Virtual environment created")
+        print("[OK] Virtual environment created")
     else:
-        print("✅ Virtual environment already exists")
+        print("[OK] Virtual environment already exists")
     
     # Determine activation script path
     if os.name == 'nt':  # Windows
@@ -143,51 +139,51 @@ def setup_python_environment():
     print("Installing Python dependencies...")
     run_command(f"{pip_path} install --upgrade pip")
     run_command(f"{pip_path} install -r requirements.txt")
-    print("✅ Python dependencies installed")
+    print("[OK] Python dependencies installed")
     
     return activate_script
 
 def setup_frontend():
     """Set up frontend dependencies."""
-    print("\n⚛️  Setting up frontend...")
+    print("\nSetting up frontend...")
     
     frontend_path = Path("frontend")
     if not frontend_path.exists():
-        print("❌ Frontend directory not found")
+        print("[X] Frontend directory not found")
         return False
     
     # Install npm dependencies
     print("Installing frontend dependencies...")
     run_command("npm install", cwd=frontend_path)
-    print("✅ Frontend dependencies installed")
+    print("[OK] Frontend dependencies installed")
     
     # Create frontend .env file
     frontend_env_path = frontend_path / ".env.development"
     if not frontend_env_path.exists():
         with open(frontend_env_path, 'w') as f:
             f.write("VITE_API_BASE_URL=http://localhost:8000\n")
-        print("✅ Created frontend .env.development file")
+        print("[OK] Created frontend .env.development file")
     
     return True
 
 def initialize_database():
     """Initialize the database."""
-    print("\n🗄️  Initializing database...")
+    print("\nInitializing database...")
     
     try:
         # Import and run database initialization
         from app.database import create_db_and_tables
         create_db_and_tables()
-        print("✅ Database initialized")
+        print("[OK] Database initialized")
         return True
     except Exception as e:
-        print(f"❌ Failed to initialize database: {e}")
+        print(f"[X] Failed to initialize database: {e}")
         return False
 
 def print_next_steps(environment="development"):
     """Print instructions for next steps."""
-    print("\n🎉 Setup complete!")
-    print("\n📋 Next steps:")
+    print("\nSetup complete!")
+    print("\nNext steps:")
     
     if environment == "development":
         print("\n1. Start Redis (if not already running):")
@@ -228,14 +224,14 @@ def print_next_steps(environment="development"):
         print("5. Start the production server: python start_production.py")
         print("6. Start the worker: python start_worker.py")
     
-    print("\n📚 Documentation:")
+    print("\nDocumentation:")
     print("   User Guide: USER_GUIDE.md")
     print("   Deployment Guide: DEPLOYMENT_GUIDE.md")
     print("   API Documentation: http://localhost:8000/docs (when server is running)")
 
 def main():
     """Main setup function."""
-    print("🚀 AutomateOS Setup Script")
+    print("AutomateOS Setup Script")
     print("=" * 40)
     
     # Check environment argument
@@ -250,7 +246,7 @@ def main():
     print(f"Setting up for {environment} environment\n")
     
     # Check prerequisites
-    print("🔍 Checking prerequisites...")
+    print("Checking prerequisites...")
     check_python_version()
     
     node_ok = check_node_version()
@@ -261,7 +257,7 @@ def main():
     redis_running = check_redis()
     
     # Create environment file
-    print(f"\n📝 Creating environment configuration...")
+    print(f"\nCreating environment configuration...")
     create_env_file(environment)
     
     # Set up Python environment
@@ -271,20 +267,20 @@ def main():
     if environment == "development" and node_ok:
         frontend_ok = setup_frontend()
         if not frontend_ok:
-            print("⚠️  Frontend setup failed, but backend should work")
+            print("[!] Frontend setup failed, but backend should work")
     
     # Initialize database
     if environment == "development":
         db_ok = initialize_database()
         if not db_ok:
-            print("⚠️  Database initialization failed")
+            print("[!] Database initialization failed")
             print("You may need to run this manually after starting the server")
     
     # Print next steps
     print_next_steps(environment)
     
     if not redis_running:
-        print("\n⚠️  Warning: Redis is not running. You'll need to start it before running workflows.")
+        print("\n[!] Warning: Redis is not running. You'll need to start it before running workflows.")
 
 if __name__ == "__main__":
     main()

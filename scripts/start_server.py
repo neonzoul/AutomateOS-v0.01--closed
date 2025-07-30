@@ -17,10 +17,10 @@ def check_redis():
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         r = redis.from_url(redis_url)
         r.ping()
-        print("✓ Redis connection verified")
+        print("[OK] Redis connection verified")
         return True
     except Exception as e:
-        print(f"⚠ Redis connection failed: {e}")
+        print(f"[!] Redis connection failed: {e}")
         print("  Queue functionality will not work without Redis")
         print("  Install Redis: https://redis.io/download")
         return False
@@ -34,9 +34,9 @@ def main():
     redis_ok = check_redis()
     
     if redis_ok:
-        print("✓ Task queue infrastructure ready")
+        print("[OK] Task queue infrastructure ready")
     else:
-        print("⚠ Starting server without queue functionality")
+        print("[!] Starting server without queue functionality")
     
     print("Starting FastAPI server...")
     print("API will be available at: http://localhost:8000")

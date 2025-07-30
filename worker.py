@@ -45,11 +45,9 @@ def main():
     
     # Create and start worker with configuration
     worker = Worker(
-        [queue], 
+        queues=[queue], 
         connection=redis_conn,
-        default_worker_ttl=settings.job_timeout + 60,  # Worker TTL slightly longer than job timeout
-        default_result_ttl=86400,  # Keep results for 24 hours
-        default_failure_ttl=86400  # Keep failed jobs for 24 hours
+        default_result_ttl=86400  # Keep results for 24 hours
     )
     print("Worker started. Waiting for jobs...")
     worker.work()
