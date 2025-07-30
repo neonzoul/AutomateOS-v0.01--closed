@@ -18,6 +18,16 @@ __*
 !.yarn/releases
 !.yarn/versions
 
+##- Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+.ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
 ##- testing
 /coverage
 
@@ -54,3 +64,48 @@ next-env.d.ts
 
 ##- Build output
 dist/
+
+##- Testing cache
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+##- Database files
+*.db
+*.sqlite
+*.sqlite3
+
+##- Log files
+*.log
+logs/
+
+##- Runtime files
+*.pid
+*.seed
+
+##- Docker
+.dockerignore
+
+##- Redis
+dump.rdb
+
+##- Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+##- Backup files
+*.bak
+*.backup
+*~
